@@ -1,1 +1,1474 @@
-javascript:(function()%7B%2F*%20%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%0A%20*%20%20BASE44%20UNIVERSAL%20TOOLKIT%20%20v3.2%20%E2%80%94%20All-in-One%20%2B%20Upload%20Music%0A%20*%20%20C%C3%BA%20ph%C3%A1p%3A%20X.menu()%20%7C%20X.help()%20%7C%20X.cancel(0)%20%7C%20X.upload()%20...%0A%20*%20%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%20*%2F%0A(()%20%3D%3E%20%7B%0A%20%20'use%20strict'%3B%0A%0A%20%20%2F%2F%20%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%20CORE%20%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%0A%20%20const%20%24tok%20%3D%20()%20%3D%3E%0A%20%20%20%20localStorage.getItem('base44_access_token')%20%7C%7C%0A%20%20%20%20sessionStorage.getItem('base44_access_token')%20%7C%7C%0A%20%20%20%20(document.cookie.match(%2Fbase44_access_token%3D(%5B%5E%3B%5D%2B)%2F)%20%7C%7C%20%5B%5D)%5B1%5D%3B%0A%0A%20%20const%20%24detectApp%20%3D%20()%20%3D%3E%20%7B%0A%20%20%20%20const%20m%20%3D%20location.pathname.match(%2F%5C%2Fapi%5C%2Fapps%5C%2F(%5Ba-f0-9%5D%7B20%2C%7D)%2Fi)%3B%0A%20%20%20%20if%20(m)%20return%20m%5B1%5D%3B%0A%20%20%20%20for%20(const%20e%20of%20performance.getEntriesByType('resource'))%20%7B%0A%20%20%20%20%20%20const%20x%20%3D%20e.name.match(%2F%5C%2Fapi%5C%2Fapps%5C%2F(%5Ba-f0-9%5D%7B20%2C%7D)%5C%2F%2Fi)%3B%0A%20%20%20%20%20%20if%20(x)%20return%20x%5B1%5D%3B%0A%20%20%20%20%7D%0A%20%20%20%20return%20null%3B%0A%20%20%7D%3B%0A%0A%20%20const%20%24decodeEmail%20%3D%20()%20%3D%3E%20%7B%0A%20%20%20%20try%20%7B%0A%20%20%20%20%20%20const%20t%20%3D%20%24tok()%3B%20if%20(!t)%20return%20null%3B%0A%20%20%20%20%20%20const%20p%20%3D%20JSON.parse(atob(t.split('.')%5B1%5D))%3B%0A%20%20%20%20%20%20return%20p.email%20%7C%7C%20p.user_email%20%7C%7C%20p.sub%20%7C%7C%20null%3B%0A%20%20%20%20%7D%20catch%20%7B%20return%20null%3B%20%7D%0A%20%20%7D%3B%0A%0A%20%20const%20S%20%3D%20%7B%0A%20%20%20%20appId%3A%20localStorage.getItem('b44_app')%20%7C%7C%20%24detectApp()%2C%0A%20%20%20%20email%3A%20localStorage.getItem('b44_email')%20%7C%7C%20%24decodeEmail()%2C%0A%20%20%20%20expected%3A%20%2BlocalStorage.getItem('b44_exp')%20%7C%7C%200%2C%0A%20%20%20%20dry%3A%20localStorage.getItem('b44_dry')%20%3D%3D%3D%20'1'%2C%0A%20%20%20%20entities%3A%20JSON.parse(localStorage.getItem('b44_ent')%20%7C%7C%20'%7B%22release%22%3A%22Release%22%2C%22track%22%3A%22Track%22%7D')%2C%0A%20%20%20%20cache%3A%20%5B%5D%2C%0A%20%20%20%20undo%3A%20%5B%5D%2C%0A%20%20%20%20view%3A%20%5B%5D%2C%0A%20%20%20%20filter%3A%20'all'%0A%20%20%7D%3B%0A%0A%20%20const%20save%20%3D%20()%20%3D%3E%20%7B%0A%20%20%20%20if%20(S.appId)%20localStorage.setItem('b44_app'%2C%20S.appId)%3B%0A%20%20%20%20if%20(S.email)%20localStorage.setItem('b44_email'%2C%20S.email)%3B%0A%20%20%20%20localStorage.setItem('b44_exp'%2C%20S.expected)%3B%0A%20%20%20%20localStorage.setItem('b44_dry'%2C%20S.dry%20%3F%20'1'%20%3A%20'0')%3B%0A%20%20%20%20localStorage.setItem('b44_ent'%2C%20JSON.stringify(S.entities))%3B%0A%20%20%7D%3B%0A%0A%20%20%2F%2F%20%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%20UI%20helpers%20%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%0A%20%20const%20C%20%3D%20%7B%20p%3A'%230af'%2C%20g%3A'%230f0'%2C%20y%3A'%23f80'%2C%20r%3A'%23f44'%2C%20m%3A'%23f0f'%2C%20d%3A'%23888'%20%7D%3B%0A%20%20const%20log%20%20%3D%20(m%2C%20c%20%3D%20C.p)%20%3D%3E%20console.log(%60%25c%24%7Bm%7D%60%2C%20%60color%3A%24%7Bc%7D%3Bfont-weight%3Abold%60)%3B%0A%20%20const%20line%20%3D%20()%20%3D%3E%20console.log('%25c'%20%2B%20'%E2%94%80'.repeat(60)%2C%20%60color%3A%24%7BC.d%7D%60)%3B%0A%20%20const%20ok%20%20%20%3D%20m%20%3D%3E%20log(m%2C%20C.g)%3B%0A%20%20const%20warn%20%3D%20m%20%3D%3E%20log(m%2C%20C.y)%3B%0A%20%20const%20err%20%20%3D%20m%20%3D%3E%20log(m%2C%20C.r)%3B%0A%0A%20%20const%20tbl%20%3D%20rows%20%3D%3E%20rows.length%20%3F%20console.table(rows)%20%3A%20warn('(tr%E1%BB%91ng)')%3B%0A%20%20const%20strip%20%3D%20r%20%3D%3E%20%7B%20const%20%7B%20__tracks%2C%20__trackCount%2C%20...rest%20%7D%20%3D%20r%3B%20return%20rest%3B%20%7D%3B%0A%20%20const%20rowOf%20%3D%20(r%2C%20i)%20%3D%3E%20(%7B%0A%20%20%20%20idx%3A%20i%2C%0A%20%20%20%20id%3A%20r.id%2C%0A%20%20%20%20title%3A%20r.title%20%7C%7C%20r.name%20%7C%7C%20'(untitled)'%2C%0A%20%20%20%20status%3A%20r.status%20%7C%7C%20'-'%2C%0A%20%20%20%20tracks%3A%20r.__trackCount%20%3F%3F%20'-'%2C%0A%20%20%20%20stuck%3A%20S.expected%20%26%26%20r.__trackCount%20%3E%200%20%26%26%20r.__trackCount%20%3C%20S.expected%20%3F%20'%E2%9A%A0'%20%3A%20''%2C%0A%20%20%20%20created%3A%20(r.created_date%20%7C%7C%20'').slice(0%2C%2010)%0A%20%20%7D)%3B%0A%0A%20%20%2F%2F%20%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%20HTTP%20%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%0A%20%20const%20api%20%3D%20async%20(path%2C%20opts%20%3D%20%7B%7D)%20%3D%3E%20%7B%0A%20%20%20%20const%20tk%20%3D%20%24tok()%3B%0A%20%20%20%20if%20(!tk)%20throw%20new%20Error('Kh%C3%B4ng%20c%C3%B3%20base44_access_token%20%E2%80%94%20login%20l%E1%BA%A1i')%3B%0A%20%20%20%20const%20isForm%20%3D%20opts.body%20instanceof%20FormData%3B%0A%20%20%20%20const%20r%20%3D%20await%20fetch(path%2C%20%7B%0A%20%20%20%20%20%20credentials%3A%20'include'%2C%0A%20%20%20%20%20%20...opts%2C%0A%20%20%20%20%20%20headers%3A%20%7B%0A%20%20%20%20%20%20%20%20...(isForm%20%3F%20%7B%7D%20%3A%20%7B%20'Content-Type'%3A%20'application%2Fjson'%20%7D)%2C%0A%20%20%20%20%20%20%20%20'Authorization'%3A%20%60Bearer%20%24%7Btk%7D%60%2C%0A%20%20%20%20%20%20%20%20...(opts.headers%20%7C%7C%20%7B%7D)%0A%20%20%20%20%20%20%7D%0A%20%20%20%20%7D)%3B%0A%20%20%20%20const%20text%20%3D%20await%20r.text()%3B%0A%20%20%20%20let%20data%3B%20try%20%7B%20data%20%3D%20JSON.parse(text)%3B%20%7D%20catch%20%7B%20data%20%3D%20text.slice(0%2C%20400)%3B%20%7D%0A%20%20%20%20return%20%7B%20ok%3A%20r.ok%2C%20status%3A%20r.status%2C%20data%20%7D%3B%0A%20%20%7D%3B%0A%0A%20%20const%20unwrap%20%3D%20d%20%3D%3E%20Array.isArray(d)%20%3F%20d%20%3A%20(d%3F.data%20%7C%7C%20d%3F.items%20%7C%7C%20d%3F.records%20%7C%7C%20%5B%5D)%3B%0A%20%20const%20ent%20%3D%20k%20%3D%3E%20%60%2Fapi%2Fapps%2F%24%7BS.appId%7D%2Fentities%2F%24%7BS.entities%5Bk%5D%20%7C%7C%20k%7D%60%3B%0A%0A%20%20%2F%2F%20%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%20DATA%20%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%0A%20%20const%20load%20%3D%20async%20(force%20%3D%20false)%20%3D%3E%20%7B%0A%20%20%20%20if%20(!S.appId)%20throw%20new%20Error('Ch%C6%B0a%20c%C3%B3%20appId%20%E2%80%94%20g%E1%BB%8Di%20X.setup()')%3B%0A%20%20%20%20if%20(!S.email)%20throw%20new%20Error('Ch%C6%B0a%20c%C3%B3%20email%20%E2%80%94%20g%E1%BB%8Di%20X.setup()')%3B%0A%20%20%20%20if%20(S.cache.length%20%26%26%20!force)%20return%20S.cache%3B%0A%20%20%20%20log(%60%F0%9F%94%8D%20Loading%20releases...%60)%3B%0A%20%20%20%20const%20q%20%3D%20%7B%20artist_email%3A%20S.email%20%7D%3B%0A%20%20%20%20const%20r%20%3D%20await%20api(%60%24%7Bent('release')%7D%3Fq%3D%24%7BencodeURIComponent(JSON.stringify(q))%7D%26sort%3D-created_date%26limit%3D500%60)%3B%0A%20%20%20%20const%20rels%20%3D%20unwrap(r.data)%3B%0A%20%20%20%20const%20out%20%3D%20%5B%5D%3B%0A%20%20%20%20for%20(const%20rel%20of%20rels)%20%7B%0A%20%20%20%20%20%20const%20t%20%3D%20await%20api(%60%24%7Bent('track')%7D%3Fq%3D%24%7BencodeURIComponent(JSON.stringify(%7B%20release_id%3A%20rel.id%20%7D))%7D%26limit%3D500%60)%3B%0A%20%20%20%20%20%20const%20tracks%20%3D%20unwrap(t.data)%3B%0A%20%20%20%20%20%20out.push(%7B%20...rel%2C%20__tracks%3A%20tracks%2C%20__trackCount%3A%20tracks.length%20%7D)%3B%0A%20%20%20%20%7D%0A%20%20%20%20S.cache%20%3D%20out%3B%0A%20%20%20%20ok(%60%E2%9C%85%20%24%7Bout.length%7D%20releases%20loaded%60)%3B%0A%20%20%20%20return%20out%3B%0A%20%20%7D%3B%0A%0A%20%20const%20resolve%20%3D%20v%20%3D%3E%20%7B%0A%20%20%20%20if%20(v%20%3D%3D%20null)%20return%20null%3B%0A%20%20%20%20if%20(typeof%20v%20%3D%3D%3D%20'number'%20%7C%7C%20%2F%5E%5Cd%2B%24%2F.test(String(v)))%20return%20S.cache%5B%2Bv%5D%20%7C%7C%20null%3B%0A%20%20%20%20return%20S.cache.find(r%20%3D%3E%20r.id%20%3D%3D%3D%20v)%20%7C%7C%20null%3B%0A%20%20%7D%3B%0A%0A%20%20const%20parseSel%20%3D%20(str%2C%20max)%20%3D%3E%20%7B%0A%20%20%20%20if%20(!str)%20return%20%5B%5D%3B%0A%20%20%20%20if%20(str.trim().toLowerCase()%20%3D%3D%3D%20'all')%20return%20Array.from(%7B%20length%3A%20max%20%7D%2C%20(_%2C%20i)%20%3D%3E%20i)%3B%0A%20%20%20%20const%20set%20%3D%20new%20Set()%3B%0A%20%20%20%20str.split('%2C').forEach(p%20%3D%3E%20%7B%0A%20%20%20%20%20%20p%20%3D%20p.trim()%3B%0A%20%20%20%20%20%20const%20r%20%3D%20p.match(%2F%5E(%5Cd%2B)%5Cs*-%5Cs*(%5Cd%2B)%24%2F)%3B%0A%20%20%20%20%20%20if%20(r)%20%7B%0A%20%20%20%20%20%20%20%20const%20%5Ba%2C%20b%5D%20%3D%20%5B%2Br%5B1%5D%2C%20%2Br%5B2%5D%5D.sort((x%2C%20y)%20%3D%3E%20x%20-%20y)%3B%0A%20%20%20%20%20%20%20%20for%20(let%20i%20%3D%20a%3B%20i%20%3C%3D%20b%3B%20i%2B%2B)%20if%20(i%20%3E%3D%200%20%26%26%20i%20%3C%20max)%20set.add(i)%3B%0A%20%20%20%20%20%20%7D%20else%20%7B%0A%20%20%20%20%20%20%20%20const%20n%20%3D%20parseInt(p)%3B%0A%20%20%20%20%20%20%20%20if%20(!isNaN(n)%20%26%26%20n%20%3E%3D%200%20%26%26%20n%20%3C%20max)%20set.add(n)%3B%0A%20%20%20%20%20%20%7D%0A%20%20%20%20%7D)%3B%0A%20%20%20%20return%20%5B...set%5D.sort((a%2C%20b)%20%3D%3E%20a%20-%20b)%3B%0A%20%20%7D%3B%0A%0A%20%20const%20FILTERS%20%3D%20%7B%0A%20%20%20%20all%3A%20()%20%3D%3E%20true%2C%0A%20%20%20%20pending%3A%20r%20%3D%3E%20r.status%20%3D%3D%3D%20'pending'%2C%0A%20%20%20%20stuck%3A%20r%20%3D%3E%20S.expected%20%3E%200%20%26%26%20r.__trackCount%20%3E%200%20%26%26%20r.__trackCount%20%3C%20S.expected%2C%0A%20%20%20%20cancelled%3A%20r%20%3D%3E%20r.status%20%3D%3D%3D%20'cancelled'%2C%0A%20%20%20%20live%3A%20r%20%3D%3E%20r.status%20%3D%3D%3D%20'live'%2C%0A%20%20%20%20empty%3A%20r%20%3D%3E%20r.__trackCount%20%3D%3D%3D%200%0A%20%20%7D%3B%0A%0A%20%20const%20view%20%3D%20(f%20%3D%20'all')%20%3D%3E%20%7B%0A%20%20%20%20S.filter%20%3D%20f%3B%0A%20%20%20%20S.view%20%3D%20S.cache.filter(FILTERS%5Bf%5D%20%7C%7C%20FILTERS.all)%3B%0A%20%20%20%20log(%60%5Cn%F0%9F%93%84%20%5B%24%7Bf%7D%5D%20%24%7BS.view.length%7D%2F%24%7BS.cache.length%7D%20releases%60%2C%20C.p)%3B%0A%20%20%20%20tbl(S.view.map(rowOf))%3B%0A%20%20%20%20return%20S.view%3B%0A%20%20%7D%3B%0A%0A%20%20%2F%2F%20%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%20DOWNLOAD%20%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%0A%20%20const%20dl%20%3D%20(content%2C%20filename%2C%20mime%20%3D%20'text%2Fplain')%20%3D%3E%20%7B%0A%20%20%20%20const%20blob%20%3D%20new%20Blob(%5Bcontent%5D%2C%20%7B%20type%3A%20mime%20%2B%20'%3Bcharset%3Dutf-8'%20%7D)%3B%0A%20%20%20%20const%20a%20%3D%20document.createElement('a')%3B%0A%20%20%20%20a.href%20%3D%20URL.createObjectURL(blob)%3B%0A%20%20%20%20a.download%20%3D%20filename%3B%0A%20%20%20%20document.body.appendChild(a)%3B%20a.click()%3B%20a.remove()%3B%0A%20%20%20%20setTimeout(()%20%3D%3E%20URL.revokeObjectURL(a.href)%2C%205000)%3B%0A%20%20%20%20ok(%60%F0%9F%93%A5%20%24%7Bfilename%7D%60)%3B%0A%20%20%7D%3B%0A%0A%20%20const%20dlJSON%20%3D%20(o%2C%20name)%20%3D%3E%20dl(JSON.stringify(o%2C%20null%2C%202)%2C%20name%2C%20'application%2Fjson')%3B%0A%0A%20%20const%20dlCSV%20%3D%20(rows%2C%20name)%20%3D%3E%20%7B%0A%20%20%20%20const%20cols%20%3D%20%5B'id'%2C%20'title'%2C%20'status'%2C%20'trackCount'%2C%20'isrc'%2C%20'upc'%2C%20'release_date'%2C%20'created_date'%5D%3B%0A%20%20%20%20const%20esc%20%3D%20v%20%3D%3E%20%60%22%24%7BString(v%20%3F%3F%20'').replace(%2F%22%2Fg%2C%20'%22%22')%7D%22%60%3B%0A%20%20%20%20const%20body%20%3D%20rows.map(r%20%3D%3E%20%5B%0A%20%20%20%20%20%20r.id%2C%20r.title%20%7C%7C%20r.name%2C%20r.status%2C%20r.__trackCount%2C%20r.isrc%2C%20r.upc%2C%20r.release_date%2C%20r.created_date%0A%20%20%20%20%5D.map(esc).join('%2C')).join('%5Cn')%3B%0A%20%20%20%20dl('%5Cufeff'%20%2B%20cols.join('%2C')%20%2B%20'%5Cn'%20%2B%20body%2C%20name%2C%20'text%2Fcsv')%3B%0A%20%20%7D%3B%0A%0A%20%20%2F%2F%20%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%20CRUD%20%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%0A%20%20const%20update%20%3D%20async%20(id%2C%20patch%2C%20k%20%3D%20'release')%20%3D%3E%20%7B%0A%20%20%20%20if%20(S.dry)%20%7B%20warn(%60%5BDRY%5D%20update%20%24%7Bk%7D%20%24%7Bid%7D%3A%20%24%7BJSON.stringify(patch).slice(0%2C%20100)%7D%60)%3B%20return%20%7B%20ok%3A%20true%20%7D%3B%20%7D%0A%20%20%20%20const%20r%20%3D%20await%20api(%60%24%7Bent(k)%7D%2F%24%7Bid%7D%60%2C%20%7B%20method%3A%20'PUT'%2C%20body%3A%20JSON.stringify(%7B%20...patch%2C%20updated_date%3A%20new%20Date().toISOString()%20%7D)%20%7D)%3B%0A%20%20%20%20if%20(!r.ok)%20err(%60%E2%9D%8C%20update%20%24%7Bk%7D%3A%20%24%7Br.status%7D%20%24%7Br.data%3F.message%20%7C%7C%20''%7D%60)%3B%0A%20%20%20%20return%20r%3B%0A%20%20%7D%3B%0A%0A%20%20const%20remove%20%3D%20async%20(id%2C%20k%20%3D%20'release')%20%3D%3E%20%7B%0A%20%20%20%20if%20(S.dry)%20%7B%20warn(%60%5BDRY%5D%20delete%20%24%7Bk%7D%20%24%7Bid%7D%60)%3B%20return%20%7B%20ok%3A%20true%20%7D%3B%20%7D%0A%20%20%20%20return%20api(%60%24%7Bent(k)%7D%2F%24%7Bid%7D%60%2C%20%7B%20method%3A%20'DELETE'%20%7D)%3B%0A%20%20%7D%3B%0A%0A%20%20const%20create%20%3D%20async%20(data%2C%20k%20%3D%20'release')%20%3D%3E%20%7B%0A%20%20%20%20if%20(S.dry)%20%7B%20warn(%60%5BDRY%5D%20create%20%24%7Bk%7D%60)%3B%20return%20%7B%20ok%3A%20true%2C%20data%3A%20%7B%20id%3A%20'dry-'%20%2B%20Date.now()%2C%20...data%20%7D%20%7D%3B%20%7D%0A%20%20%20%20return%20api(%60%24%7Bent(k)%7D%60%2C%20%7B%20method%3A%20'POST'%2C%20body%3A%20JSON.stringify(data)%20%7D)%3B%0A%20%20%7D%3B%0A%0A%20%20%2F%2F%20%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%20ACTIONS%20%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%0A%20%20const%20doCancel%20%3D%20async%20(target)%20%3D%3E%20%7B%0A%20%20%20%20const%20r%20%3D%20resolve(target)%3B%0A%20%20%20%20if%20(!r)%20return%20err(%60Kh%C3%B4ng%20t%C3%ACm%20th%E1%BA%A5y%3A%20%24%7Btarget%7D%60)%3B%0A%20%20%20%20const%20now%20%3D%20new%20Date().toISOString()%3B%0A%20%20%20%20const%20res%20%3D%20await%20update(r.id%2C%20%7B%0A%20%20%20%20%20%20status%3A%20'cancelled'%2C%0A%20%20%20%20%20%20distribution_status%3A%20'cancelled'%2C%0A%20%20%20%20%20%20cancelled_at%3A%20now%0A%20%20%20%20%7D)%3B%0A%20%20%20%20if%20(res.ok)%20%7B%20ok(%60%E2%9C%85%20Cancelled%3A%20%24%7Br.title%7D%60)%3B%20r.status%20%3D%20'cancelled'%3B%20%7D%0A%20%20%20%20else%20err(%60%E2%9D%8C%20Cancel%20fail%60)%3B%0A%20%20%7D%3B%0A%0A%20%20const%20doDelete%20%3D%20async%20(target%2C%20%7B%20backup%20%3D%20true%2C%20silent%20%3D%20false%20%7D%20%3D%20%7B%7D)%20%3D%3E%20%7B%0A%20%20%20%20const%20r%20%3D%20resolve(target)%3B%0A%20%20%20%20if%20(!r)%20return%20err(%60Kh%C3%B4ng%20t%C3%ACm%20th%E1%BA%A5y%3A%20%24%7Btarget%7D%60)%3B%0A%20%20%20%20if%20(!silent%20%26%26%20!confirm(%60%E2%9A%A0%EF%B8%8F%20XO%C3%81%20V%C4%A8NH%20VI%E1%BB%84N%20%22%24%7Br.title%7D%22%20%2B%20%24%7Br.__trackCount%7D%20tracks%3F%60))%20return%3B%0A%20%20%20%20if%20(backup)%20%7B%0A%20%20%20%20%20%20dlJSON(%7B%0A%20%20%20%20%20%20%20%20exportedAt%3A%20new%20Date().toISOString()%2C%20appId%3A%20S.appId%2C%20email%3A%20S.email%2C%0A%20%20%20%20%20%20%20%20release%3A%20strip(r)%2C%20tracks%3A%20r.__tracks%0A%20%20%20%20%20%20%7D%2C%20%60backup_%24%7Br.id%7D_%24%7BDate.now()%7D.json%60)%3B%0A%20%20%20%20%7D%0A%20%20%20%20S.undo.push(%7B%20type%3A%20'delete'%2C%20release%3A%20r%2C%20tracks%3A%20r.__tracks%20%7D)%3B%0A%20%20%20%20for%20(const%20t%20of%20r.__tracks%20%7C%7C%20%5B%5D)%20%7B%0A%20%20%20%20%20%20await%20remove(t.id%2C%20'track')%3B%0A%20%20%20%20%20%20console.log(%60%20%20%20Track%20%24%7Bt.id%7D%20%E2%86%92%20ok%60)%3B%0A%20%20%20%20%7D%0A%20%20%20%20const%20res%20%3D%20await%20remove(r.id%2C%20'release')%3B%0A%20%20%20%20if%20(res.ok)%20%7B%20ok(%60%E2%9C%85%20Deleted%3A%20%24%7Br.title%7D%60)%3B%20S.cache%20%3D%20S.cache.filter(x%20%3D%3E%20x.id%20!%3D%3D%20r.id)%3B%20%7D%0A%20%20%20%20else%20err(%60%E2%9D%8C%20Delete%20fail%3A%20%24%7Bres.status%7D%60)%3B%0A%20%20%7D%3B%0A%0A%20%20const%20doBackup%20%3D%20async%20(target)%20%3D%3E%20%7B%0A%20%20%20%20const%20r%20%3D%20resolve(target)%3B%0A%20%20%20%20if%20(!r)%20return%20err(%60Kh%C3%B4ng%20t%C3%ACm%20th%E1%BA%A5y%60)%3B%0A%20%20%20%20dlJSON(%7B%0A%20%20%20%20%20%20exportedAt%3A%20new%20Date().toISOString()%2C%20appId%3A%20S.appId%2C%20email%3A%20S.email%2C%0A%20%20%20%20%20%20release%3A%20strip(r)%2C%20tracks%3A%20r.__tracks%0A%20%20%20%20%7D%2C%20%60backup_%24%7Br.id%7D_%24%7BDate.now()%7D.json%60)%3B%0A%20%20%7D%3B%0A%0A%20%20const%20doUndo%20%3D%20async%20()%20%3D%3E%20%7B%0A%20%20%20%20const%20last%20%3D%20S.undo.pop()%3B%0A%20%20%20%20if%20(!last)%20return%20warn('Kh%C3%B4ng%20c%C3%B3%20g%C3%AC%20%C4%91%E1%BB%83%20undo')%3B%0A%20%20%20%20warn(%60%E2%86%A9%EF%B8%8F%20Restoring%20%22%24%7Blast.release.title%7D%22...%60)%3B%0A%20%20%20%20const%20%7B%20id%2C%20created_date%2C%20updated_date%2C%20...rest%20%7D%20%3D%20last.release%3B%0A%20%20%20%20const%20r1%20%3D%20await%20create(rest%2C%20'release')%3B%0A%20%20%20%20if%20(!r1.ok)%20return%20err(%60Restore%20fail%3A%20%24%7Br1.status%7D%60)%3B%0A%20%20%20%20ok(%60%E2%9C%85%20Release%20restored%20%E2%86%92%20new%20id%3A%20%24%7Br1.data.id%7D%60)%3B%0A%20%20%20%20for%20(const%20t%20of%20last.tracks%20%7C%7C%20%5B%5D)%20%7B%0A%20%20%20%20%20%20const%20%7B%20id%2C%20release_id%2C%20...tr%20%7D%20%3D%20t%3B%0A%20%20%20%20%20%20await%20create(%7B%20...tr%2C%20release_id%3A%20r1.data.id%20%7D%2C%20'track')%3B%0A%20%20%20%20%7D%0A%20%20%20%20await%20load(true)%3B%0A%20%20%7D%3B%0A%0A%20%20%2F%2F%20%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%20BULK%20%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%0A%20%20const%20pickTargets%20%3D%20async%20(verb)%20%3D%3E%20%7B%0A%20%20%20%20const%20f%20%3D%20prompt(%60Filter%20(all%2Fpending%2Fstuck%2Fcancelled%2Flive%2Fempty)%3A%60%2C%20'stuck')%3B%0A%20%20%20%20if%20(!f)%20return%20null%3B%0A%20%20%20%20const%20rows%20%3D%20view(f)%3B%0A%20%20%20%20if%20(!rows.length)%20return%20null%3B%0A%20%20%20%20const%20sel%20%3D%20prompt(%60Ch%E1%BB%8Dn%20(VD%20%220%2C2%22%20%7C%20%220-3%22%20%7C%20%22all%22)%3A%60%2C%20'all')%3B%0A%20%20%20%20const%20idxs%20%3D%20parseSel(sel%2C%20rows.length)%3B%0A%20%20%20%20if%20(!idxs.length)%20return%20null%3B%0A%20%20%20%20const%20targets%20%3D%20idxs.map(i%20%3D%3E%20rows%5Bi%5D)%3B%0A%20%20%20%20log(%60%E2%96%B6%EF%B8%8F%20%20%24%7Bverb%7D%20%24%7Btargets.length%7D%20releases%3A%60)%3B%0A%20%20%20%20targets.forEach(r%20%3D%3E%20console.log(%60%20%20%20%24%7Br.id%7D%20%E2%80%94%20%24%7Br.title%7D%60))%3B%0A%20%20%20%20return%20targets%3B%0A%20%20%7D%3B%0A%0A%20%20const%20bulkCancel%20%3D%20async%20()%20%3D%3E%20%7B%0A%20%20%20%20const%20t%20%3D%20await%20pickTargets('Cancel')%3B%0A%20%20%20%20if%20(!t)%20return%3B%0A%20%20%20%20if%20(!confirm(%60Cancel%20%24%7Bt.length%7D%20releases%3F%60))%20return%3B%0A%20%20%20%20for%20(const%20r%20of%20t)%20await%20doCancel(r.id)%3B%0A%20%20%20%20await%20load(true)%3B%0A%20%20%7D%3B%0A%0A%20%20const%20bulkDelete%20%3D%20async%20()%20%3D%3E%20%7B%0A%20%20%20%20const%20t%20%3D%20await%20pickTargets('Delete')%3B%0A%20%20%20%20if%20(!t)%20return%3B%0A%20%20%20%20const%20total%20%3D%20t.reduce((s%2C%20r)%20%3D%3E%20s%20%2B%20r.__trackCount%2C%200)%3B%0A%20%20%20%20if%20(!confirm(%60%E2%98%A0%EF%B8%8F%20XO%C3%81%20%24%7Bt.length%7D%20releases%20%2B%20%24%7Btotal%7D%20tracks%3F%20KH%C3%94NG%20rollback!%60))%20return%3B%0A%20%20%20%20const%20bk%20%3D%20confirm('Backup%20tr%C6%B0%E1%BB%9Bc%3F%20(khuy%E1%BA%BFn%20ngh%E1%BB%8B)')%3B%0A%20%20%20%20if%20(bk)%20%7B%0A%20%20%20%20%20%20dlJSON(%7B%0A%20%20%20%20%20%20%20%20exportedAt%3A%20new%20Date().toISOString()%2C%20appId%3A%20S.appId%2C%20email%3A%20S.email%2C%0A%20%20%20%20%20%20%20%20releases%3A%20t.map(r%20%3D%3E%20(%7B%20release%3A%20strip(r)%2C%20tracks%3A%20r.__tracks%20%7D))%0A%20%20%20%20%20%20%7D%2C%20%60bulk_backup_%24%7BDate.now()%7D.json%60)%3B%0A%20%20%20%20%7D%0A%20%20%20%20for%20(const%20r%20of%20t)%20await%20doDelete(r.id%2C%20%7B%20backup%3A%20false%2C%20silent%3A%20true%20%7D)%3B%0A%20%20%20%20await%20load(true)%3B%0A%20%20%7D%3B%0A%0A%20%20const%20bulkBackup%20%3D%20async%20()%20%3D%3E%20%7B%0A%20%20%20%20const%20t%20%3D%20await%20pickTargets('Backup')%3B%0A%20%20%20%20if%20(!t)%20return%3B%0A%20%20%20%20dlJSON(%7B%0A%20%20%20%20%20%20exportedAt%3A%20new%20Date().toISOString()%2C%20appId%3A%20S.appId%2C%20email%3A%20S.email%2C%0A%20%20%20%20%20%20releases%3A%20t.map(r%20%3D%3E%20(%7B%20release%3A%20strip(r)%2C%20tracks%3A%20r.__tracks%20%7D))%0A%20%20%20%20%7D%2C%20%60bulk_backup_%24%7BDate.now()%7D.json%60)%3B%0A%20%20%7D%3B%0A%0A%20%20%2F%2F%20%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%20UPLOAD%20HELPERS%20%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%0A%20%20const%20pickFile%20%3D%20(accept%20%3D%20'*%2F*')%20%3D%3E%20new%20Promise(res%20%3D%3E%20%7B%0A%20%20%20%20const%20inp%20%3D%20document.createElement('input')%3B%0A%20%20%20%20inp.type%20%3D%20'file'%3B%20inp.accept%20%3D%20accept%3B%0A%20%20%20%20inp.onchange%20%3D%20()%20%3D%3E%20res(inp.files%5B0%5D%20%7C%7C%20null)%3B%0A%20%20%20%20inp.click()%3B%0A%20%20%7D)%3B%0A%0A%20%20const%20pickFiles%20%3D%20(accept%20%3D%20'*%2F*'%2C%20multiple%20%3D%20true)%20%3D%3E%20new%20Promise(res%20%3D%3E%20%7B%0A%20%20%20%20const%20inp%20%3D%20document.createElement('input')%3B%0A%20%20%20%20inp.type%20%3D%20'file'%3B%20inp.accept%20%3D%20accept%3B%20inp.multiple%20%3D%20multiple%3B%0A%20%20%20%20inp.onchange%20%3D%20()%20%3D%3E%20res(multiple%20%3F%20%5B...inp.files%5D%20%3A%20(inp.files%5B0%5D%20%7C%7C%20null))%3B%0A%20%20%20%20inp.click()%3B%0A%20%20%7D)%3B%0A%0A%20%20const%20uploadFile%20%3D%20async%20(file%2C%20label%20%3D%20'')%20%3D%3E%20%7B%0A%20%20%20%20const%20tk%20%3D%20%24tok()%3B%0A%20%20%20%20const%20fd%20%3D%20new%20FormData()%3B%0A%20%20%20%20fd.append('file'%2C%20file%2C%20file.name)%3B%0A%20%20%20%20const%20start%20%3D%20Date.now()%3B%0A%20%20%20%20log(%60%E2%8F%AB%20%24%7Blabel%20%7C%7C%20file.name%7D%20(%24%7B(file.size%20%2F%201024%20%2F%201024).toFixed(2)%7D%20MB)...%60%2C%20C.p)%3B%0A%20%20%20%20const%20r%20%3D%20await%20fetch(%60%2Fapi%2Fapps%2F%24%7BS.appId%7D%2Fintegration-endpoints%2FCore%2FUploadFile%60%2C%20%7B%0A%20%20%20%20%20%20method%3A%20'POST'%2C%20credentials%3A%20'include'%2C%0A%20%20%20%20%20%20headers%3A%20%7B%20'Authorization'%3A%20%60Bearer%20%24%7Btk%7D%60%20%7D%2C%0A%20%20%20%20%20%20body%3A%20fd%0A%20%20%20%20%7D)%3B%0A%20%20%20%20const%20d%20%3D%20await%20r.json()%3B%0A%20%20%20%20const%20ms%20%3D%20Date.now()%20-%20start%3B%0A%20%20%20%20if%20(!r.ok)%20throw%20new%20Error(d%3F.message%20%7C%7C%20%60Upload%20%24%7Br.status%7D%60)%3B%0A%20%20%20%20const%20url%20%3D%20d.file_url%20%7C%7C%20d.url%20%7C%7C%20d.public_url%20%7C%7C%20d.data%3F.file_url%3B%0A%20%20%20%20ok(%60%20%20%20%E2%9C%85%20%24%7Bfile.name%7D%20(%24%7Bms%7Dms)%20%E2%86%92%20%24%7Burl.slice(0%2C%2060)%7D...%60)%3B%0A%20%20%20%20return%20url%3B%0A%20%20%7D%3B%0A%0A%20%20const%20titleFromFilename%20%3D%20(name)%20%3D%3E%0A%20%20%20%20name.replace(%2F%5C.%5B%5E.%5D%2B%24%2F%2C%20'').replace(%2F%5B_-%5D%2B%2Fg%2C%20'%20').replace(%2F%5Cs%2B%2Fg%2C%20'%20').trim()%3B%0A%0A%20%20%2F%2F%20%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%20UPLOAD%20MUSIC%20%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%0A%20%20const%20uploadMusic%20%3D%20async%20()%20%3D%3E%20%7B%0A%20%20%20%20line()%3B%0A%20%20%20%20log('%F0%9F%8E%B5%20UPLOAD%20MUSIC%20%E2%80%94%20T%E1%BA%A1o%20release%20m%E1%BB%9Bi'%2C%20C.m)%3B%0A%20%20%20%20line()%3B%0A%0A%20%20%20%20%2F%2F%201.%20Metadata%20release%0A%20%20%20%20const%20title%20%3D%20prompt('Title%20album%2Fsingle%3A')%3B%0A%20%20%20%20if%20(!title)%20return%20warn('Hu%E1%BB%B7')%3B%0A%0A%20%20%20%20const%20artist%20%3D%20prompt('Primary%20artist%3A'%2C%20S.email%3F.split('%40')%5B0%5D%20%7C%7C%20'')%3B%0A%20%20%20%20const%20releaseType%20%3D%20prompt('Type%20(single%2Falbum%2Fep)%3A'%2C%20'single')%3B%0A%20%20%20%20const%20genre%20%3D%20prompt('Genre%3A'%2C%20'Afrobeats')%3B%0A%20%20%20%20const%20language%20%3D%20prompt('Language%3A'%2C%20'English')%3B%0A%20%20%20%20const%20releaseDate%20%3D%20prompt('Release%20date%20YYYY-MM-DD%3A'%2C%20new%20Date(Date.now()%20%2B%207%20*%20864e5).toISOString().slice(0%2C%2010))%3B%0A%20%20%20%20const%20recordLabel%20%3D%20prompt('Record%20label%3A'%2C%20artist%20%7C%7C%20'')%3B%0A%0A%20%20%20%20%2F%2F%202.%20Ch%E1%BB%8Dn%20files%0A%20%20%20%20warn('%F0%9F%93%81%20Ch%E1%BB%8Dn%20ARTWORK%20(b%E1%BB%8F%20qua%20%3D%20Cancel%20%C4%91%E1%BB%83%20kh%C3%B4ng%20c%C3%B3%20%E1%BA%A3nh)')%3B%0A%20%20%20%20const%20artwork%20%3D%20await%20pickFile('image%2F*')%3B%0A%0A%20%20%20%20warn('%F0%9F%8E%B5%20Ch%E1%BB%8Dn%20AUDIO%20FILES%20(nhi%E1%BB%81u%20file%20%C4%91%C6%B0%E1%BB%A3c)')%3B%0A%20%20%20%20const%20audioFiles%20%3D%20await%20pickFiles('audio%2F*%2Cvideo%2Fmp4'%2C%20true)%3B%0A%20%20%20%20if%20(!audioFiles.length)%20return%20warn('Kh%C3%B4ng%20c%C3%B3%20file%20audio%20%E2%80%94%20hu%E1%BB%B7')%3B%0A%0A%20%20%20%20log(%60%5Cn%F0%9F%93%8B%20T%C3%B3m%20t%E1%BA%AFt%3A%60)%3B%0A%20%20%20%20console.table(%5B%7B%0A%20%20%20%20%20%20title%2C%20artist%2C%20type%3A%20releaseType%2C%20genre%2C%0A%20%20%20%20%20%20date%3A%20releaseDate%2C%20tracks%3A%20audioFiles.length%2C%0A%20%20%20%20%20%20artwork%3A%20artwork%20%3F%20artwork.name%20%3A%20'(none)'%0A%20%20%20%20%7D%5D)%3B%0A%0A%20%20%20%20if%20(!confirm(%60T%E1%BA%A1o%20release%20v%E1%BB%9Bi%20%24%7BaudioFiles.length%7D%20track%3F%60))%20return%3B%0A%0A%20%20%20%20%2F%2F%203.%20Upload%20artwork%0A%20%20%20%20let%20artwork_url%20%3D%20''%3B%0A%20%20%20%20if%20(artwork)%20%7B%0A%20%20%20%20%20%20try%20%7B%20artwork_url%20%3D%20await%20uploadFile(artwork%2C%20'Artwork')%3B%20%7D%0A%20%20%20%20%20%20catch%20(e)%20%7B%20err(%60Artwork%20upload%20fail%3A%20%24%7Be.message%7D%60)%3B%20return%3B%20%7D%0A%20%20%20%20%7D%0A%0A%20%20%20%20%2F%2F%204.%20Upload%20audio%20files%0A%20%20%20%20log(%60%5Cn%E2%8F%AB%20Upload%20%24%7BaudioFiles.length%7D%20audio%20files...%60%2C%20C.p)%3B%0A%20%20%20%20const%20audioUrls%20%3D%20%5B%5D%3B%0A%20%20%20%20for%20(const%20f%20of%20audioFiles)%20%7B%0A%20%20%20%20%20%20try%20%7B%0A%20%20%20%20%20%20%20%20const%20url%20%3D%20await%20uploadFile(f)%3B%0A%20%20%20%20%20%20%20%20audioUrls.push(%7B%20url%2C%20filename%3A%20f.name%20%7D)%3B%0A%20%20%20%20%20%20%7D%20catch%20(e)%20%7B%20err(%60Fail%20%24%7Bf.name%7D%3A%20%24%7Be.message%7D%60)%3B%20%7D%0A%20%20%20%20%7D%0A%20%20%20%20if%20(!audioUrls.length)%20return%20err('Kh%C3%B4ng%20upload%20%C4%91%C6%B0%E1%BB%A3c%20file%20n%C3%A0o')%3B%0A%0A%20%20%20%20%2F%2F%205.%20T%E1%BA%A1o%20Release%0A%20%20%20%20log(%60%5Cn%F0%9F%93%A6%20T%E1%BA%A1o%20release%20%22%24%7Btitle%7D%22...%60%2C%20C.p)%3B%0A%20%20%20%20const%20releasePayload%20%3D%20%7B%0A%20%20%20%20%20%20title%2C%0A%20%20%20%20%20%20artist_email%3A%20S.email%2C%0A%20%20%20%20%20%20primary_artist%3A%20artist%2C%0A%20%20%20%20%20%20release_type%3A%20releaseType%2C%0A%20%20%20%20%20%20genre%2C%0A%20%20%20%20%20%20language%2C%0A%20%20%20%20%20%20release_date%3A%20releaseDate%2C%0A%20%20%20%20%20%20release_year%3A%20releaseDate.slice(0%2C%204)%2C%0A%20%20%20%20%20%20record_label%3A%20recordLabel%2C%0A%20%20%20%20%20%20artwork_url%2C%0A%20%20%20%20%20%20status%3A%20'draft'%2C%0A%20%20%20%20%20%20territories%3A%20'worldwide'%2C%0A%20%20%20%20%20%20explicit%3A%20false%2C%0A%20%20%20%20%20%20copyright_owner%3A%20artist%2C%0A%20%20%20%20%20%20created_by%3A%20S.email%0A%20%20%20%20%7D%3B%0A%20%20%20%20const%20rr%20%3D%20await%20create(releasePayload%2C%20'release')%3B%0A%20%20%20%20if%20(!rr.ok)%20return%20err(%60T%E1%BA%A1o%20release%20fail%3A%20%24%7Brr.status%7D%20%24%7Brr.data%3F.message%20%7C%7C%20''%7D%60)%3B%0A%20%20%20%20const%20releaseId%20%3D%20rr.data.id%3B%0A%20%20%20%20ok(%60%E2%9C%85%20Release%20t%E1%BA%A1o%3A%20%24%7BreleaseId%7D%60)%3B%0A%0A%20%20%20%20%2F%2F%206.%20T%E1%BA%A1o%20Tracks%0A%20%20%20%20log(%60%5Cn%F0%9F%8E%B5%20T%E1%BA%A1o%20%24%7BaudioUrls.length%7D%20tracks...%60%2C%20C.p)%3B%0A%20%20%20%20for%20(let%20i%20%3D%200%3B%20i%20%3C%20audioUrls.length%3B%20i%2B%2B)%20%7B%0A%20%20%20%20%20%20const%20%7B%20url%2C%20filename%20%7D%20%3D%20audioUrls%5Bi%5D%3B%0A%20%20%20%20%20%20const%20trackTitle%20%3D%20titleFromFilename(filename)%3B%0A%20%20%20%20%20%20const%20tr%20%3D%20await%20create(%7B%0A%20%20%20%20%20%20%20%20release_id%3A%20releaseId%2C%0A%20%20%20%20%20%20%20%20title%3A%20trackTitle%2C%0A%20%20%20%20%20%20%20%20audio_url%3A%20url%2C%0A%20%20%20%20%20%20%20%20track_number%3A%20i%20%2B%201%2C%0A%20%20%20%20%20%20%20%20artist_email%3A%20S.email%0A%20%20%20%20%20%20%7D%2C%20'track')%3B%0A%20%20%20%20%20%20tr.ok%20%3F%20ok(%60%20%20%20%E2%9C%85%20%5B%24%7Bi%20%2B%201%7D%5D%20%24%7BtrackTitle%7D%60)%20%3A%20err(%60%20%20%20%E2%9D%8C%20%5B%24%7Bi%20%2B%201%7D%5D%20fail%3A%20%24%7Btr.status%7D%60)%3B%0A%20%20%20%20%7D%0A%0A%20%20%20%20%2F%2F%207.%20Refresh%0A%20%20%20%20await%20load(true)%3B%0A%20%20%20%20const%20newRel%20%3D%20S.cache.find(r%20%3D%3E%20r.id%20%3D%3D%3D%20releaseId)%3B%0A%20%20%20%20if%20(newRel)%20%7B%0A%20%20%20%20%20%20ok(%60%5Cn%F0%9F%8E%89%20Ho%C3%A0n%20t%E1%BA%A5t%3A%20%22%24%7BnewRel.title%7D%22%20%E2%80%94%20%24%7BnewRel.__trackCount%7D%20tracks%60)%3B%0A%20%20%20%20%20%20if%20(confirm('Xem%20chi%20ti%E1%BA%BFt%20release%20v%E1%BB%ABa%20t%E1%BA%A1o%3F'))%20%7B%0A%20%20%20%20%20%20%20%20console.log(strip(newRel))%3B%0A%20%20%20%20%20%20%20%20tbl(newRel.__tracks.map(t%20%3D%3E%20(%7B%20id%3A%20t.id%2C%20title%3A%20t.title%2C%20num%3A%20t.track_number%20%7D)))%3B%0A%20%20%20%20%20%20%7D%0A%20%20%20%20%7D%0A%20%20%7D%3B%0A%0A%20%20%2F%2F%20%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%20ADD%20TRACKS%20TO%20RELEASE%20%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%0A%20%20const%20addTracks%20%3D%20async%20(target)%20%3D%3E%20%7B%0A%20%20%20%20const%20rel%20%3D%20resolve(target)%3B%0A%20%20%20%20if%20(!rel)%20return%20err('Kh%C3%B4ng%20t%C3%ACm%20th%E1%BA%A5y%20release')%3B%0A%20%20%20%20line()%3B%0A%20%20%20%20log(%60%F0%9F%8E%B5%20ADD%20TRACKS%20%E2%86%92%20%22%24%7Brel.title%7D%22%20(hi%E1%BB%87n%20%24%7Brel.__trackCount%7D%20tracks)%60%2C%20C.m)%3B%0A%20%20%20%20line()%3B%0A%0A%20%20%20%20warn('%F0%9F%8E%B5%20Ch%E1%BB%8Dn%20AUDIO%20FILES%20c%E1%BA%A7n%20th%C3%AAm')%3B%0A%20%20%20%20const%20audioFiles%20%3D%20await%20pickFiles('audio%2F*%2Cvideo%2Fmp4'%2C%20true)%3B%0A%20%20%20%20if%20(!audioFiles.length)%20return%20warn('Hu%E1%BB%B7')%3B%0A%0A%20%20%20%20log(%60%5Cn%E2%8F%AB%20Upload%20%24%7BaudioFiles.length%7D%20file...%60%2C%20C.p)%3B%0A%20%20%20%20const%20audioUrls%20%3D%20%5B%5D%3B%0A%20%20%20%20for%20(const%20f%20of%20audioFiles)%20%7B%0A%20%20%20%20%20%20try%20%7B%20const%20url%20%3D%20await%20uploadFile(f)%3B%20audioUrls.push(%7B%20url%2C%20filename%3A%20f.name%20%7D)%3B%20%7D%0A%20%20%20%20%20%20catch%20(e)%20%7B%20err(%60Fail%20%24%7Bf.name%7D%3A%20%24%7Be.message%7D%60)%3B%20%7D%0A%20%20%20%20%7D%0A%20%20%20%20if%20(!audioUrls.length)%20return%20err('Kh%C3%B4ng%20upload%20%C4%91%C6%B0%E1%BB%A3c%20file')%3B%0A%0A%20%20%20%20const%20startNum%20%3D%20rel.__trackCount%20%2B%201%3B%0A%20%20%20%20for%20(let%20i%20%3D%200%3B%20i%20%3C%20audioUrls.length%3B%20i%2B%2B)%20%7B%0A%20%20%20%20%20%20const%20%7B%20url%2C%20filename%20%7D%20%3D%20audioUrls%5Bi%5D%3B%0A%20%20%20%20%20%20const%20trackTitle%20%3D%20titleFromFilename(filename)%3B%0A%20%20%20%20%20%20const%20tr%20%3D%20await%20create(%7B%0A%20%20%20%20%20%20%20%20release_id%3A%20rel.id%2C%0A%20%20%20%20%20%20%20%20title%3A%20trackTitle%2C%0A%20%20%20%20%20%20%20%20audio_url%3A%20url%2C%0A%20%20%20%20%20%20%20%20track_number%3A%20startNum%20%2B%20i%2C%0A%20%20%20%20%20%20%20%20artist_email%3A%20S.email%0A%20%20%20%20%20%20%7D%2C%20'track')%3B%0A%20%20%20%20%20%20tr.ok%20%3F%20ok(%60%20%20%20%E2%9C%85%20%5B%24%7BstartNum%20%2B%20i%7D%5D%20%24%7BtrackTitle%7D%60)%20%3A%20err(%60%20%20%20%E2%9D%8C%20fail%20%24%7Btr.status%7D%60)%3B%0A%20%20%20%20%7D%0A%20%20%20%20await%20load(true)%3B%0A%20%20%20%20const%20upd%20%3D%20S.cache.find(r%20%3D%3E%20r.id%20%3D%3D%3D%20rel.id)%3B%0A%20%20%20%20if%20(upd)%20ok(%60%5Cn%F0%9F%8E%89%20%22%24%7Bupd.title%7D%22%20gi%E1%BB%9D%20c%C3%B3%20%24%7Bupd.__trackCount%7D%20tracks%60)%3B%0A%20%20%7D%3B%0A%0A%20%20%2F%2F%20%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%20UPLOAD%20AUDIO%20FOR%20EXISTING%20TRACK%20%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%0A%20%20const%20uploadAudioForTrack%20%3D%20async%20(target)%20%3D%3E%20%7B%0A%20%20%20%20const%20rel%20%3D%20resolve(target)%3B%0A%20%20%20%20if%20(!rel)%20return%20err('Kh%C3%B4ng%20t%C3%ACm%20th%E1%BA%A5y%20release')%3B%0A%20%20%20%20if%20(!rel.__tracks%3F.length)%20return%20warn('Release%20ch%C6%B0a%20c%C3%B3%20track')%3B%0A%20%20%20%20tbl(rel.__tracks.map((t%2C%20i)%20%3D%3E%20(%7B%20idx%3A%20i%2C%20id%3A%20t.id%2C%20title%3A%20t.title%2C%20audio%3A%20t.audio_url%20%3F%20'%E2%9C%85'%20%3A%20'%E2%9D%8C'%20%7D)))%3B%0A%20%20%20%20const%20ti%20%3D%20%2Bprompt('Ch%E1%BB%8Dn%20idx%20track%20c%E1%BA%A7n%20upload%20audio%3A')%3B%0A%20%20%20%20const%20t%20%3D%20rel.__tracks%5Bti%5D%3B%0A%20%20%20%20if%20(!t)%20return%20err('idx%20sai')%3B%0A%20%20%20%20const%20file%20%3D%20await%20pickFile('audio%2F*%2Cvideo%2Fmp4')%3B%0A%20%20%20%20if%20(!file)%20return%20warn('Hu%E1%BB%B7')%3B%0A%20%20%20%20try%20%7B%0A%20%20%20%20%20%20const%20url%20%3D%20await%20uploadFile(file)%3B%0A%20%20%20%20%20%20await%20update(t.id%2C%20%7B%20audio_url%3A%20url%20%7D%2C%20'track')%3B%0A%20%20%20%20%20%20ok(%60%E2%9C%85%20Audio%20g%C3%A1n%20cho%20%22%24%7Bt.title%7D%22%60)%3B%0A%20%20%20%20%20%20t.audio_url%20%3D%20url%3B%0A%20%20%20%20%7D%20catch%20(e)%20%7B%20err(e.message)%3B%20%7D%0A%20%20%7D%3B%0A%0A%20%20%2F%2F%20%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%20BULK%20ADD%20TRACKS%20%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%0A%20%20const%20bulkAddTracks%20%3D%20async%20()%20%3D%3E%20%7B%0A%20%20%20%20const%20f%20%3D%20prompt('Filter%20release%20(all%2Fpending%2Fstuck%2Fcancelled%2Flive)%3A'%2C%20'stuck')%3B%0A%20%20%20%20const%20rows%20%3D%20view(f)%3B%0A%20%20%20%20if%20(!rows.length)%20return%3B%0A%20%20%20%20const%20sel%20%3D%20prompt('Ch%E1%BB%8Dn%20idx%20release%3A'%2C%20'all')%3B%0A%20%20%20%20const%20targets%20%3D%20parseSel(sel%2C%20rows.length).map(i%20%3D%3E%20rows%5Bi%5D)%3B%0A%20%20%20%20if%20(!targets.length)%20return%3B%0A%20%20%20%20warn('%F0%9F%8E%B5%20Ch%E1%BB%8Dn%20audio%20files%20(s%E1%BA%BD%20t%E1%BB%B1%20chia%20%C4%91%E1%BB%81u%20cho%20c%C3%A1c%20release)')%3B%0A%20%20%20%20const%20files%20%3D%20await%20pickFiles('audio%2F*%2Cvideo%2Fmp4'%2C%20true)%3B%0A%20%20%20%20if%20(!files.length)%20return%3B%0A%20%20%20%20log(%60%E2%8F%AB%20Upload%20%24%7Bfiles.length%7D%20files...%60)%3B%0A%20%20%20%20const%20urls%20%3D%20%5B%5D%3B%0A%20%20%20%20for%20(const%20file%20of%20files)%20%7B%0A%20%20%20%20%20%20try%20%7B%20urls.push(%7B%20url%3A%20await%20uploadFile(file)%2C%20filename%3A%20file.name%20%7D)%3B%20%7D%0A%20%20%20%20%20%20catch%20(e)%20%7B%20err(e.message)%3B%20%7D%0A%20%20%20%20%7D%0A%20%20%20%20const%20perRel%20%3D%20Math.ceil(urls.length%20%2F%20targets.length)%3B%0A%20%20%20%20for%20(let%20ri%20%3D%200%3B%20ri%20%3C%20targets.length%3B%20ri%2B%2B)%20%7B%0A%20%20%20%20%20%20const%20rel%20%3D%20targets%5Bri%5D%3B%0A%20%20%20%20%20%20const%20chunk%20%3D%20urls.slice(ri%20*%20perRel%2C%20(ri%20%2B%201)%20*%20perRel)%3B%0A%20%20%20%20%20%20log(%60%5Cn%E2%86%92%20%22%24%7Brel.title%7D%22%20nh%E1%BA%ADn%20%24%7Bchunk.length%7D%20tracks%60%2C%20C.p)%3B%0A%20%20%20%20%20%20const%20startNum%20%3D%20rel.__trackCount%20%2B%201%3B%0A%20%20%20%20%20%20for%20(let%20i%20%3D%200%3B%20i%20%3C%20chunk.length%3B%20i%2B%2B)%20%7B%0A%20%20%20%20%20%20%20%20await%20create(%7B%0A%20%20%20%20%20%20%20%20%20%20release_id%3A%20rel.id%2C%0A%20%20%20%20%20%20%20%20%20%20title%3A%20titleFromFilename(chunk%5Bi%5D.filename)%2C%0A%20%20%20%20%20%20%20%20%20%20audio_url%3A%20chunk%5Bi%5D.url%2C%0A%20%20%20%20%20%20%20%20%20%20track_number%3A%20startNum%20%2B%20i%2C%0A%20%20%20%20%20%20%20%20%20%20artist_email%3A%20S.email%0A%20%20%20%20%20%20%20%20%7D%2C%20'track')%3B%0A%20%20%20%20%20%20%7D%0A%20%20%20%20%7D%0A%20%20%20%20await%20load(true)%3B%0A%20%20%20%20ok(%60%5Cn%F0%9F%8E%89%20Ho%C3%A0n%20t%E1%BA%A5t%20bulk%20upload%60)%3B%0A%20%20%7D%3B%0A%0A%20%20%2F%2F%20%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%20EDIT%20SCHEMA%20%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%0A%20%20const%20RF%20%3D%20%5B%0A%20%20%20%20%5B'title'%2C'Title'%2C'text'%5D%2C%20%5B'description'%2C'Description'%2C'text'%5D%2C%0A%20%20%20%20%5B'genre'%2C'Genre'%2C'text'%5D%2C%20%5B'sub_genre'%2C'Sub%20Genre'%2C'text'%5D%2C%0A%20%20%20%20%5B'language'%2C'Language'%2C'text'%5D%2C%20%5B'mood'%2C'Mood%20(comma)'%2C'array'%5D%2C%0A%20%20%20%20%5B'release_date'%2C'Release%20Date%20YYYY-MM-DD'%2C'text'%5D%2C%20%5B'release_year'%2C'Year'%2C'text'%5D%2C%0A%20%20%20%20%5B'primary_artist'%2C'Primary%20Artist'%2C'text'%5D%2C%20%5B'featured_artists'%2C'Featured%20Artists'%2C'text'%5D%2C%0A%20%20%20%20%5B'producer'%2C'Producer'%2C'text'%5D%2C%20%5B'composer'%2C'Composer'%2C'text'%5D%2C%0A%20%20%20%20%5B'lyricist'%2C'Lyricist'%2C'text'%5D%2C%20%5B'publisher'%2C'Publisher'%2C'text'%5D%2C%0A%20%20%20%20%5B'record_label'%2C'Record%20Label'%2C'text'%5D%2C%20%5B'copyright_owner'%2C'Copyright%20Owner'%2C'text'%5D%2C%0A%20%20%20%20%5B'copyright_flag'%2C'Copyright%20Flag'%2C'text'%5D%2C%20%5B'explicit'%2C'Explicit%20(true%2Ffalse)'%2C'bool'%5D%2C%0A%20%20%20%20%5B'bpm'%2C'BPM'%2C'number'%5D%2C%20%5B'key'%2C'Key'%2C'text'%5D%2C%0A%20%20%20%20%5B'upc'%2C'UPC'%2C'text'%5D%2C%20%5B'isrc'%2C'ISRC'%2C'text'%5D%2C%0A%20%20%20%20%5B'territories'%2C'Territories'%2C'text'%5D%2C%20%5B'presave_enabled'%2C'Presave'%2C'bool'%5D%2C%0A%20%20%20%20%5B'presave_link'%2C'Presave%20Link'%2C'text'%5D%2C%20%5B'spotify_artist_name'%2C'Spotify%20Artist'%2C'text'%5D%2C%0A%20%20%20%20%5B'spotify_artist_url'%2C'Spotify%20URL'%2C'text'%5D%2C%20%5B'spotify_artist_image'%2C'Spotify%20Image'%2C'text'%5D%2C%0A%20%20%20%20%5B'spotify_id'%2C'Spotify%20ID'%2C'text'%5D%2C%20%5B'smart_link_url'%2C'Smart%20Link'%2C'text'%5D%2C%0A%20%20%20%20%5B'slug'%2C'Slug'%2C'text'%5D%2C%20%5B'lyrics'%2C'Lyrics'%2C'text'%5D%2C%0A%20%20%20%20%5B'artwork_url'%2C'Artwork%20URL'%2C'text'%5D%0A%20%20%5D%3B%0A%20%20const%20TF%20%3D%20%5B%0A%20%20%20%20%5B'title'%2C'Track%20Title'%2C'text'%5D%2C%20%5B'isrc'%2C'ISRC'%2C'text'%5D%2C%0A%20%20%20%20%5B'track_number'%2C'Track%20%23'%2C'number'%5D%2C%20%5B'duration'%2C'Duration%20(s)'%2C'number'%5D%2C%0A%20%20%20%20%5B'audio_url'%2C'Audio%20URL'%2C'text'%5D%0A%20%20%5D%3B%0A%0A%20%20const%20cast%20%3D%20(raw%2C%20type)%20%3D%3E%20%7B%0A%20%20%20%20if%20(raw%20%3D%3D%3D%20'')%20return%20''%3B%0A%20%20%20%20if%20(type%20%3D%3D%3D%20'bool')%20return%20raw.toLowerCase()%20%3D%3D%3D%20'true'%20%7C%7C%20raw%20%3D%3D%3D%20'1'%3B%0A%20%20%20%20if%20(type%20%3D%3D%3D%20'number')%20return%20Number(raw)%3B%0A%20%20%20%20if%20(type%20%3D%3D%3D%20'array')%20return%20raw.split('%2C').map(s%20%3D%3E%20s.trim()).filter(Boolean)%3B%0A%20%20%20%20return%20raw%3B%0A%20%20%7D%3B%0A%0A%20%20const%20showFields%20%3D%20(obj%2C%20fields)%20%3D%3E%20%7B%0A%20%20%20%20tbl(fields.map((%5Bk%2C%20l%5D%2C%20i)%20%3D%3E%20(%7B%0A%20%20%20%20%20%20idx%3A%20i%2C%20key%3A%20k%2C%20label%3A%20l%2C%0A%20%20%20%20%20%20value%3A%20Array.isArray(obj%5Bk%5D)%20%3F%20obj%5Bk%5D.join('%2C%20')%20%3A%20(obj%5Bk%5D%20%3F%3F%20'')%0A%20%20%20%20%7D)))%3B%0A%20%20%7D%3B%0A%0A%20%20const%20editRelease%20%3D%20async%20(target)%20%3D%3E%20%7B%0A%20%20%20%20const%20rel%20%3D%20resolve(target)%3B%0A%20%20%20%20if%20(!rel)%20return%20err('Kh%C3%B4ng%20t%C3%ACm%20th%E1%BA%A5y%20release')%3B%0A%20%20%20%20log(%60%5Cn%E2%9C%8F%EF%B8%8F%20%20EDIT%3A%20%24%7Brel.title%7D%20(%24%7Brel.id%7D)%60%2C%20C.m)%3B%0A%20%20%20%20while%20(true)%20%7B%0A%20%20%20%20%20%20line()%3B%0A%20%20%20%20%20%20showFields(rel%2C%20RF)%3B%0A%20%20%20%20%20%20log('Nh%E1%BA%ADp%3A%20%3Cidx%3E%20s%E1%BB%ADa%20%7C%20%22a%22%20all%20%7C%20%22art%22%20upload%20%7C%20%22url%22%20%7C%20%22tracks%22%20%7C%20%22q%22%20tho%C3%A1t'%2C%20C.g)%3B%0A%20%20%20%20%20%20const%20input%20%3D%20prompt('%E2%86%92')%3B%0A%20%20%20%20%20%20if%20(!input%20%7C%7C%20input%20%3D%3D%3D%20'q')%20break%3B%0A%20%20%20%20%20%20if%20(input%20%3D%3D%3D%20'a')%20%7B%20await%20editAll(rel)%3B%20continue%3B%20%7D%0A%20%20%20%20%20%20if%20(input%20%3D%3D%3D%20'art')%20%7B%20await%20editArtwork(rel)%3B%20continue%3B%20%7D%0A%20%20%20%20%20%20if%20(input%20%3D%3D%3D%20'url')%20%7B%0A%20%20%20%20%20%20%20%20const%20u%20%3D%20prompt('URL%20artwork%3A')%3B%0A%20%20%20%20%20%20%20%20if%20(u)%20%7B%20await%20update(rel.id%2C%20%7B%20artwork_url%3A%20u%20%7D)%3B%20rel.artwork_url%20%3D%20u%3B%20ok('%E2%9C%85')%3B%20%7D%0A%20%20%20%20%20%20%20%20continue%3B%0A%20%20%20%20%20%20%7D%0A%20%20%20%20%20%20if%20(input%20%3D%3D%3D%20'tracks')%20%7B%20await%20editTrackMenu(rel)%3B%20continue%3B%20%7D%0A%20%20%20%20%20%20const%20f%20%3D%20RF%5B%2Binput%5D%3B%0A%20%20%20%20%20%20if%20(!f)%20%7B%20warn('idx%20kh%C3%B4ng%20h%E1%BB%A3p%20l%E1%BB%87')%3B%20continue%3B%20%7D%0A%20%20%20%20%20%20const%20%5Bk%2C%20label%2C%20type%5D%20%3D%20f%3B%0A%20%20%20%20%20%20const%20cur%20%3D%20Array.isArray(rel%5Bk%5D)%20%3F%20rel%5Bk%5D.join('%2C%20')%20%3A%20(rel%5Bk%5D%20%3F%3F%20'')%3B%0A%20%20%20%20%20%20const%20raw%20%3D%20prompt(%60%24%7Blabel%7D%3A%60%2C%20cur)%3B%0A%20%20%20%20%20%20if%20(raw%20%3D%3D%3D%20null)%20continue%3B%0A%20%20%20%20%20%20const%20v%20%3D%20cast(raw%2C%20type)%3B%0A%20%20%20%20%20%20const%20r%20%3D%20await%20update(rel.id%2C%20%7B%20%5Bk%5D%3A%20v%20%7D)%3B%0A%20%20%20%20%20%20if%20(r.ok)%20%7B%20rel%5Bk%5D%20%3D%20v%3B%20ok(%60%E2%9C%85%20%24%7Bk%7D%20updated%60)%3B%20%7D%0A%20%20%20%20%7D%0A%20%20%7D%3B%0A%0A%20%20const%20editAll%20%3D%20async%20(rel)%20%3D%3E%20%7B%0A%20%20%20%20if%20(!confirm('S%E1%BB%ADa%20T%E1%BA%A4T%20C%E1%BA%A2%3F%20Cancel%20%3D%20d%E1%BB%ABng'))%20return%3B%0A%20%20%20%20const%20patch%20%3D%20%7B%7D%3B%0A%20%20%20%20for%20(const%20%5Bk%2C%20label%2C%20type%5D%20of%20RF)%20%7B%0A%20%20%20%20%20%20const%20cur%20%3D%20Array.isArray(rel%5Bk%5D)%20%3F%20rel%5Bk%5D.join('%2C%20')%20%3A%20(rel%5Bk%5D%20%3F%3F%20'')%3B%0A%20%20%20%20%20%20const%20raw%20%3D%20prompt(%60%24%7Blabel%7D%3A%60%2C%20cur)%3B%0A%20%20%20%20%20%20if%20(raw%20%3D%3D%3D%20null)%20return%3B%0A%20%20%20%20%20%20if%20(String(raw)%20!%3D%3D%20String(cur))%20patch%5Bk%5D%20%3D%20cast(raw%2C%20type)%3B%0A%20%20%20%20%7D%0A%20%20%20%20if%20(!Object.keys(patch).length)%20return%20warn('Kh%C3%B4ng%20thay%20%C4%91%E1%BB%95i')%3B%0A%20%20%20%20if%20(!confirm(%60L%C6%B0u%20%24%7BObject.keys(patch).length%7D%20field%3F%60))%20return%3B%0A%20%20%20%20const%20r%20%3D%20await%20update(rel.id%2C%20patch)%3B%0A%20%20%20%20if%20(r.ok)%20%7B%20Object.assign(rel%2C%20patch)%3B%20ok('%E2%9C%85%20%C4%90%C3%A3%20l%C6%B0u')%3B%20%7D%0A%20%20%7D%3B%0A%0A%20%20const%20editArtwork%20%3D%20async%20(rel)%20%3D%3E%20%7B%0A%20%20%20%20log(%60%F0%9F%96%BC%EF%B8%8F%20%20Hi%E1%BB%87n%20t%E1%BA%A1i%3A%20%24%7Brel.artwork_url%20%7C%7C%20'(none)'%7D%60%2C%20C.p)%3B%0A%20%20%20%20const%20file%20%3D%20await%20pickFile('image%2F*')%3B%0A%20%20%20%20if%20(!file)%20return%20warn('Ch%C6%B0a%20ch%E1%BB%8Dn%20file')%3B%0A%20%20%20%20try%20%7B%0A%20%20%20%20%20%20const%20url%20%3D%20await%20uploadFile(file%2C%20'Artwork')%3B%0A%20%20%20%20%20%20if%20(!confirm('%C4%90%E1%BA%B7t%20l%C3%A0m%20artwork%3F'))%20return%3B%0A%20%20%20%20%20%20await%20update(rel.id%2C%20%7B%20artwork_url%3A%20url%20%7D)%3B%0A%20%20%20%20%20%20rel.artwork_url%20%3D%20url%3B%0A%20%20%20%20%7D%20catch%20(e)%20%7B%20err(e.message)%3B%20%7D%0A%20%20%7D%3B%0A%0A%20%20const%20editTrackMenu%20%3D%20async%20(rel)%20%3D%3E%20%7B%0A%20%20%20%20if%20(!rel.__tracks%3F.length)%20return%20warn('Release%20kh%C3%B4ng%20c%C3%B3%20track')%3B%0A%20%20%20%20tbl(rel.__tracks.map((t%2C%20i)%20%3D%3E%20(%7B%20idx%3A%20i%2C%20id%3A%20t.id%2C%20title%3A%20t.title%2C%20isrc%3A%20t.isrc%20%7D)))%3B%0A%20%20%20%20const%20ti%20%3D%20%2Bprompt('Ch%E1%BB%8Dn%20idx%20track%3A')%3B%0A%20%20%20%20const%20t%20%3D%20rel.__tracks%5Bti%5D%3B%0A%20%20%20%20if%20(!t)%20return%20err('idx%20sai')%3B%0A%20%20%20%20log(%60%5Cn%E2%9C%8F%EF%B8%8F%20%20TRACK%3A%20%24%7Bt.title%7D%60%2C%20C.m)%3B%0A%20%20%20%20while%20(true)%20%7B%0A%20%20%20%20%20%20line()%3B%0A%20%20%20%20%20%20showFields(t%2C%20TF)%3B%0A%20%20%20%20%20%20log('Nh%E1%BA%ADp%3A%20%3Cidx%3E%20s%E1%BB%ADa%20%7C%20%22a%22%20all%20%7C%20%22audio%22%20upload%20%7C%20%22q%22%20tho%C3%A1t'%2C%20C.g)%3B%0A%20%20%20%20%20%20const%20input%20%3D%20prompt('%E2%86%92')%3B%0A%20%20%20%20%20%20if%20(!input%20%7C%7C%20input%20%3D%3D%3D%20'q')%20break%3B%0A%20%20%20%20%20%20if%20(input%20%3D%3D%3D%20'audio')%20%7B%0A%20%20%20%20%20%20%20%20const%20file%20%3D%20await%20pickFile('audio%2F*%2Cvideo%2Fmp4')%3B%0A%20%20%20%20%20%20%20%20if%20(!file)%20continue%3B%0A%20%20%20%20%20%20%20%20try%20%7B%0A%20%20%20%20%20%20%20%20%20%20const%20url%20%3D%20await%20uploadFile(file)%3B%0A%20%20%20%20%20%20%20%20%20%20await%20update(t.id%2C%20%7B%20audio_url%3A%20url%20%7D%2C%20'track')%3B%0A%20%20%20%20%20%20%20%20%20%20t.audio_url%20%3D%20url%3B%20ok('%E2%9C%85')%3B%0A%20%20%20%20%20%20%20%20%7D%20catch%20(e)%20%7B%20err(e.message)%3B%20%7D%0A%20%20%20%20%20%20%20%20continue%3B%0A%20%20%20%20%20%20%7D%0A%20%20%20%20%20%20if%20(input%20%3D%3D%3D%20'a')%20%7B%0A%20%20%20%20%20%20%20%20const%20patch%20%3D%20%7B%7D%3B%0A%20%20%20%20%20%20%20%20for%20(const%20%5Bk%2C%20l%2C%20type%5D%20of%20TF)%20%7B%0A%20%20%20%20%20%20%20%20%20%20const%20cur%20%3D%20Array.isArray(t%5Bk%5D)%20%3F%20t%5Bk%5D.join('%2C%20')%20%3A%20(t%5Bk%5D%20%3F%3F%20'')%3B%0A%20%20%20%20%20%20%20%20%20%20const%20raw%20%3D%20prompt(%60%24%7Bl%7D%3A%60%2C%20cur)%3B%0A%20%20%20%20%20%20%20%20%20%20if%20(raw%20%3D%3D%3D%20null)%20break%3B%0A%20%20%20%20%20%20%20%20%20%20if%20(String(raw)%20!%3D%3D%20String(cur))%20patch%5Bk%5D%20%3D%20cast(raw%2C%20type)%3B%0A%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%20%20%20%20if%20(Object.keys(patch).length)%20%7B%20await%20update(t.id%2C%20patch%2C%20'track')%3B%20Object.assign(t%2C%20patch)%3B%20ok('%E2%9C%85')%3B%20%7D%0A%20%20%20%20%20%20%20%20continue%3B%0A%20%20%20%20%20%20%7D%0A%20%20%20%20%20%20const%20f%20%3D%20TF%5B%2Binput%5D%3B%0A%20%20%20%20%20%20if%20(!f)%20%7B%20warn('idx%20sai')%3B%20continue%3B%20%7D%0A%20%20%20%20%20%20const%20%5Bk%2C%20l%2C%20type%5D%20%3D%20f%3B%0A%20%20%20%20%20%20const%20cur%20%3D%20Array.isArray(t%5Bk%5D)%20%3F%20t%5Bk%5D.join('%2C%20')%20%3A%20(t%5Bk%5D%20%3F%3F%20'')%3B%0A%20%20%20%20%20%20const%20raw%20%3D%20prompt(%60%24%7Bl%7D%3A%60%2C%20cur)%3B%0A%20%20%20%20%20%20if%20(raw%20%3D%3D%3D%20null)%20continue%3B%0A%20%20%20%20%20%20const%20v%20%3D%20cast(raw%2C%20type)%3B%0A%20%20%20%20%20%20const%20r%20%3D%20await%20update(t.id%2C%20%7B%20%5Bk%5D%3A%20v%20%7D%2C%20'track')%3B%0A%20%20%20%20%20%20if%20(r.ok)%20%7B%20t%5Bk%5D%20%3D%20v%3B%20ok(%60%E2%9C%85%20%24%7Bk%7D%60)%3B%20%7D%0A%20%20%20%20%7D%0A%20%20%7D%3B%0A%0A%20%20%2F%2F%20%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%20BULK%20EDIT%20%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%0A%20%20const%20bulkSetField%20%3D%20async%20()%20%3D%3E%20%7B%0A%20%20%20%20const%20k%20%3D%20prompt('Field%20key%20(title%2Fgenre%2Flanguage%2F...)%3A')%3B%0A%20%20%20%20if%20(!k)%20return%3B%0A%20%20%20%20const%20v%20%3D%20prompt('Gi%C3%A1%20tr%E1%BB%8B%20m%E1%BB%9Bi%3A')%3B%0A%20%20%20%20const%20f%20%3D%20prompt('Filter%3A'%2C%20'all')%3B%0A%20%20%20%20const%20rows%20%3D%20view(f)%3B%0A%20%20%20%20if%20(!rows.length)%20return%3B%0A%20%20%20%20const%20sel%20%3D%20prompt('Ch%E1%BB%8Dn%20idx%3A'%2C%20'all')%3B%0A%20%20%20%20const%20targets%20%3D%20parseSel(sel%2C%20rows.length).map(i%20%3D%3E%20rows%5Bi%5D)%3B%0A%20%20%20%20if%20(!targets.length)%20return%3B%0A%20%20%20%20if%20(!confirm(%60Set%20%22%24%7Bk%7D%22%20%3D%20%22%24%7Bv%7D%22%20cho%20%24%7Btargets.length%7D%20releases%3F%60))%20return%3B%0A%20%20%20%20for%20(const%20r%20of%20targets)%20await%20update(r.id%2C%20%7B%20%5Bk%5D%3A%20v%20%7D)%3B%0A%20%20%20%20await%20load(true)%3B%0A%20%20%7D%3B%0A%0A%20%20const%20bulkArtwork%20%3D%20async%20()%20%3D%3E%20%7B%0A%20%20%20%20const%20f%20%3D%20prompt('Filter%3A'%2C%20'all')%3B%0A%20%20%20%20const%20rows%20%3D%20view(f)%3B%0A%20%20%20%20if%20(!rows.length)%20return%3B%0A%20%20%20%20const%20sel%20%3D%20prompt('Ch%E1%BB%8Dn%20idx%3A'%2C%20'all')%3B%0A%20%20%20%20const%20targets%20%3D%20parseSel(sel%2C%20rows.length).map(i%20%3D%3E%20rows%5Bi%5D)%3B%0A%20%20%20%20if%20(!targets.length)%20return%3B%0A%20%20%20%20const%20file%20%3D%20await%20pickFile('image%2F*')%3B%0A%20%20%20%20if%20(!file)%20return%3B%0A%20%20%20%20try%20%7B%0A%20%20%20%20%20%20const%20url%20%3D%20await%20uploadFile(file)%3B%0A%20%20%20%20%20%20if%20(!confirm(%60Set%20artwork%20cho%20%24%7Btargets.length%7D%20releases%3F%60))%20return%3B%0A%20%20%20%20%20%20for%20(const%20r%20of%20targets)%20await%20update(r.id%2C%20%7B%20artwork_url%3A%20url%20%7D)%3B%0A%20%20%20%20%20%20await%20load(true)%3B%0A%20%20%20%20%7D%20catch%20(e)%20%7B%20err(e.message)%3B%20%7D%0A%20%20%7D%3B%0A%0A%20%20%2F%2F%20%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%20EXPORT%20%2F%20RESTORE%20%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%0A%20%20const%20exportCSV%20%3D%20()%20%3D%3E%20dlCSV(S.cache%2C%20%60releases_%24%7BDate.now()%7D.csv%60)%3B%0A%20%20const%20exportJSON%20%3D%20()%20%3D%3E%20dlJSON(%7B%0A%20%20%20%20exportedAt%3A%20new%20Date().toISOString()%2C%20appId%3A%20S.appId%2C%20email%3A%20S.email%2C%0A%20%20%20%20releases%3A%20S.cache.map(r%20%3D%3E%20(%7B%20release%3A%20strip(r)%2C%20tracks%3A%20r.__tracks%20%7D))%0A%20%20%7D%2C%20%60releases_full_%24%7BDate.now()%7D.json%60)%3B%0A%0A%20%20const%20restore%20%3D%20()%20%3D%3E%20%7B%0A%20%20%20%20const%20inp%20%3D%20document.createElement('input')%3B%0A%20%20%20%20inp.type%20%3D%20'file'%3B%20inp.accept%20%3D%20'.json'%3B%0A%20%20%20%20inp.onchange%20%3D%20async%20()%20%3D%3E%20%7B%0A%20%20%20%20%20%20const%20file%20%3D%20inp.files%5B0%5D%3B%20if%20(!file)%20return%3B%0A%20%20%20%20%20%20const%20d%20%3D%20JSON.parse(await%20file.text())%3B%0A%20%20%20%20%20%20const%20list%20%3D%20d.releases%20%7C%7C%20(d.release%20%3F%20%5B%7B%20release%3A%20d.release%2C%20tracks%3A%20d.tracks%20%7D%5D%20%3A%20%5B%5D)%3B%0A%20%20%20%20%20%20if%20(!list.length)%20return%20err('File%20kh%C3%B4ng%20h%E1%BB%A3p%20l%E1%BB%87')%3B%0A%20%20%20%20%20%20warn(%60%F0%9F%93%82%20%24%7Blist.length%7D%20release(s)%20trong%20file%60)%3B%0A%20%20%20%20%20%20if%20(!confirm('Restore%20(t%E1%BA%A1o%20M%E1%BB%9AI)%3F'))%20return%3B%0A%20%20%20%20%20%20for%20(const%20item%20of%20list)%20%7B%0A%20%20%20%20%20%20%20%20const%20%7B%20id%2C%20created_date%2C%20updated_date%2C%20__tracks%2C%20__trackCount%2C%20...rel%20%7D%20%3D%20item.release%3B%0A%20%20%20%20%20%20%20%20const%20r1%20%3D%20await%20create(rel%2C%20'release')%3B%0A%20%20%20%20%20%20%20%20if%20(!r1.ok)%20%7B%20err(%60Fail%20%24%7Br1.status%7D%60)%3B%20continue%3B%20%7D%0A%20%20%20%20%20%20%20%20ok(%60%E2%86%92%20new%20id%3A%20%24%7Br1.data.id%7D%60)%3B%0A%20%20%20%20%20%20%20%20for%20(const%20t%20of%20item.tracks%20%7C%7C%20%5B%5D)%20%7B%0A%20%20%20%20%20%20%20%20%20%20const%20%7B%20id%2C%20release_id%2C%20...tr%20%7D%20%3D%20t%3B%0A%20%20%20%20%20%20%20%20%20%20await%20create(%7B%20...tr%2C%20release_id%3A%20r1.data.id%20%7D%2C%20'track')%3B%0A%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%20%20%7D%0A%20%20%20%20%20%20await%20load(true)%3B%0A%20%20%20%20%7D%3B%0A%20%20%20%20inp.click()%3B%0A%20%20%7D%3B%0A%0A%20%20%2F%2F%20%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%20FIND%20%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%0A%20%20const%20find%20%3D%20()%20%3D%3E%20%7B%0A%20%20%20%20const%20kw%20%3D%20prompt('T%E1%BB%AB%20kho%C3%A1%20(title%2Fid%2Fisrc%2Fupc)%3A')%3B%0A%20%20%20%20if%20(!kw)%20return%3B%0A%20%20%20%20const%20q%20%3D%20kw.toLowerCase()%3B%0A%20%20%20%20S.view%20%3D%20S.cache.filter(r%20%3D%3E%0A%20%20%20%20%20%20(r.title%20%7C%7C%20'').toLowerCase().includes(q)%20%7C%7C%0A%20%20%20%20%20%20(r.id%20%7C%7C%20'').includes(q)%20%7C%7C%0A%20%20%20%20%20%20(r.isrc%20%7C%7C%20'').includes(q)%20%7C%7C%0A%20%20%20%20%20%20(r.upc%20%7C%7C%20'').includes(q)%0A%20%20%20%20)%3B%0A%20%20%20%20log(%60%5Cn%F0%9F%94%8D%20%22%24%7Bkw%7D%22%20%E2%86%92%20%24%7BS.view.length%7D%20k%E1%BA%BFt%20qu%E1%BA%A3%60%2C%20C.p)%3B%0A%20%20%20%20tbl(S.view.map(rowOf))%3B%0A%20%20%7D%3B%0A%0A%20%20const%20detail%20%3D%20()%20%3D%3E%20%7B%0A%20%20%20%20const%20v%20%3D%20prompt('idx%20ho%E1%BA%B7c%20ID%3A')%3B%0A%20%20%20%20const%20r%20%3D%20resolve(v)%3B%0A%20%20%20%20if%20(!r)%20return%20err('Kh%C3%B4ng%20t%C3%ACm%20th%E1%BA%A5y')%3B%0A%20%20%20%20log(%60%5Cn%F0%9F%93%A6%20%24%7Br.title%7D%60%2C%20C.m)%3B%0A%20%20%20%20console.log(strip(r))%3B%0A%20%20%20%20tbl((r.__tracks%20%7C%7C%20%5B%5D).map(t%20%3D%3E%20(%7B%0A%20%20%20%20%20%20id%3A%20t.id%2C%20title%3A%20t.title%2C%20isrc%3A%20t.isrc%2C%20status%3A%20t.status%2C%0A%20%20%20%20%20%20audio%3A%20t.audio_url%20%3F%20'%E2%9C%85'%20%3A%20'%E2%9D%8C'%0A%20%20%20%20%7D)))%3B%0A%20%20%7D%3B%0A%0A%20%20%2F%2F%20%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%20RAW%20%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%0A%20%20const%20raw%20%3D%20async%20()%20%3D%3E%20%7B%0A%20%20%20%20const%20method%20%3D%20prompt('Method%3A'%2C%20'GET')%3B%0A%20%20%20%20const%20path%20%3D%20prompt('Path%3A'%2C%20ent('release'))%3B%0A%20%20%20%20const%20body%20%3D%20%5B'POST'%2C%20'PUT'%2C%20'PATCH'%5D.includes(method.toUpperCase())%20%3F%20prompt('Body%20JSON%3A'%2C%20'')%20%3A%20null%3B%0A%20%20%20%20const%20r%20%3D%20await%20api(path%2C%20%7B%20method%2C%20...(body%20%3F%20%7B%20body%20%7D%20%3A%20%7B%7D)%20%7D)%3B%0A%20%20%20%20console.log(%60%E2%86%92%20%24%7Br.status%7D%60%2C%20r.data)%3B%0A%20%20%7D%3B%0A%0A%20%20%2F%2F%20%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%20CONFIG%20%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%0A%20%20const%20setup%20%3D%20(appId%2C%20email%2C%20expected)%20%3D%3E%20%7B%0A%20%20%20%20if%20(appId)%20S.appId%20%3D%20appId%3B%0A%20%20%20%20if%20(email)%20S.email%20%3D%20email%3B%0A%20%20%20%20if%20(expected%20!%3D%20null)%20S.expected%20%3D%20%2Bexpected%3B%0A%20%20%20%20save()%3B%20S.cache%20%3D%20%5B%5D%3B%0A%20%20%20%20ok(%60%E2%9A%99%EF%B8%8F%20Setup%3A%20appId%3D%24%7BS.appId%3F.slice(0%2C%2010)%7D...%20email%3D%24%7BS.email%7D%20expected%3D%24%7BS.expected%7D%60)%3B%0A%20%20%7D%3B%0A%0A%20%20const%20showConfig%20%3D%20()%20%3D%3E%20console.log(%7B%0A%20%20%20%20appId%3A%20S.appId%2C%0A%20%20%20%20email%3A%20S.email%2C%0A%20%20%20%20expected%3A%20S.expected%2C%0A%20%20%20%20dryRun%3A%20S.dry%2C%0A%20%20%20%20entities%3A%20S.entities%2C%0A%20%20%20%20cached%3A%20S.cache.length%2C%0A%20%20%20%20undo%3A%20S.undo.length%2C%0A%20%20%20%20token%3A%20%24tok()%3F.slice(0%2C%2025)%20%2B%20'...'%0A%20%20%7D)%3B%0A%0A%20%20const%20setEntities%20%3D%20(release%2C%20track)%20%3D%3E%20%7B%0A%20%20%20%20if%20(release)%20S.entities.release%20%3D%20release%3B%0A%20%20%20%20if%20(track)%20S.entities.track%20%3D%20track%3B%0A%20%20%20%20save()%3B%20ok(%60Entities%3A%20%24%7BJSON.stringify(S.entities)%7D%60)%3B%0A%20%20%7D%3B%0A%0A%20%20%2F%2F%20%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%20MENU%20%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%0A%20%20const%20MENU%20%3D%20%5B%0A%20%20%20%20%5B'%F0%9F%91%81%EF%B8%8F%20%20Xem%20T%E1%BA%A4T%20C%E1%BA%A2%20releases'%2C%20%20%20%20%20%20%20%20%20%20()%20%3D%3E%20view('all')%5D%2C%0A%20%20%20%20%5B'%F0%9F%91%81%EF%B8%8F%20%20Xem%20PENDING'%2C%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20()%20%3D%3E%20view('pending')%5D%2C%0A%20%20%20%20%5B'%F0%9F%91%81%EF%B8%8F%20%20Xem%20b%E1%BB%8B%20K%E1%BA%B8T%20(thi%E1%BA%BFu%20track)'%2C%20%20%20%20%20()%20%3D%3E%20view('stuck')%5D%2C%0A%20%20%20%20%5B'%F0%9F%91%81%EF%B8%8F%20%20Xem%20CANCELLED'%2C%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20()%20%3D%3E%20view('cancelled')%5D%2C%0A%20%20%20%20%5B'%F0%9F%91%81%EF%B8%8F%20%20Xem%20LIVE'%2C%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20()%20%3D%3E%20view('live')%5D%2C%0A%20%20%20%20%5B'%F0%9F%91%81%EF%B8%8F%20%20Xem%20ch%C6%B0a%20c%C3%B3%20track'%2C%20%20%20%20%20%20%20%20%20%20%20%20()%20%3D%3E%20view('empty')%5D%2C%0A%20%20%20%20%5B'%F0%9F%94%8D%20T%C3%ACm%20ki%E1%BA%BFm'%2C%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20()%20%3D%3E%20find()%5D%2C%0A%20%20%20%20%5B'%F0%9F%93%84%20Xem%20chi%20ti%E1%BA%BFt'%2C%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20()%20%3D%3E%20detail()%5D%2C%0A%20%20%20%20%5B'%E2%80%94%20%E2%80%94%20%E2%80%94%20H%C3%80NH%20%C4%90%E1%BB%98NG%20%C4%90%C6%A0N%20%E2%80%94%20%E2%80%94%20%E2%80%94'%2C%20null%5D%2C%0A%20%20%20%20%5B'%F0%9F%9A%AB%20Cancel%201%20release'%2C%20%20%20%20%20%20%20%20%20%20%20%20%20%20async%20()%20%3D%3E%20%7B%20const%20v%20%3D%20prompt('idx%2FID%3A')%3B%20if%20(v)%20await%20doCancel(v)%3B%20%7D%5D%2C%0A%20%20%20%20%5B'%F0%9F%97%91%EF%B8%8F%20%20Xo%C3%A1%201%20release%20(backup%2Bdel)'%2C%20%20%20%20async%20()%20%3D%3E%20%7B%20const%20v%20%3D%20prompt('idx%2FID%3A')%3B%20if%20(v)%20await%20doDelete(v)%3B%20%7D%5D%2C%0A%20%20%20%20%5B'%F0%9F%92%BE%20Backup%201%20release%20%E2%86%92%20JSON'%2C%20%20%20%20%20%20%20async%20()%20%3D%3E%20%7B%20const%20v%20%3D%20prompt('idx%2FID%3A')%3B%20if%20(v)%20await%20doBackup(v)%3B%20%7D%5D%2C%0A%20%20%20%20%5B'%E2%80%94%20%E2%80%94%20%E2%80%94%20BULK%20%E2%80%94%20%E2%80%94%20%E2%80%94'%2C%20null%5D%2C%0A%20%20%20%20%5B'%E2%9A%A1%20Cancel%20NHI%E1%BB%80U'%2C%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20()%20%3D%3E%20bulkCancel()%5D%2C%0A%20%20%20%20%5B'%E2%9A%A1%20Xo%C3%A1%20NHI%E1%BB%80U'%2C%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20()%20%3D%3E%20bulkDelete()%5D%2C%0A%20%20%20%20%5B'%E2%9A%A1%20Backup%20NHI%E1%BB%80U'%2C%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20()%20%3D%3E%20bulkBackup()%5D%2C%0A%20%20%20%20%5B'%E2%80%94%20%E2%80%94%20%E2%80%94%20%F0%9F%8E%B5%20UPLOAD%20MUSIC%20%E2%80%94%20%E2%80%94%20%E2%80%94'%2C%20null%5D%2C%0A%20%20%20%20%5B'%F0%9F%8E%B5%20Upload%20album%20M%E1%BB%9AI%20(full%20flow)'%2C%20%20()%20%3D%3E%20uploadMusic()%5D%2C%0A%20%20%20%20%5B'%E2%9E%95%20Th%C3%AAm%20tracks%20v%C3%A0o%20release%20c%C3%B3%20s%E1%BA%B5n'%2C%20async%20()%20%3D%3E%20%7B%20const%20v%20%3D%20prompt('idx%2FID%20release%3A')%3B%20if%20(v)%20await%20addTracks(v)%3B%20%7D%5D%2C%0A%20%20%20%20%5B'%F0%9F%8E%A7%20Upload%20audio%20cho%20track%20c%C3%B3%20s%E1%BA%B5n'%2C%20async%20()%20%3D%3E%20%7B%20const%20v%20%3D%20prompt('idx%2FID%20release%3A')%3B%20if%20(v)%20await%20uploadAudioForTrack(v)%3B%20%7D%5D%2C%0A%20%20%20%20%5B'%E2%9A%A1%20Bulk%3A%20th%C3%AAm%20tracks%20cho%20nhi%E1%BB%81u%20rel'%2C%20()%20%3D%3E%20bulkAddTracks()%5D%2C%0A%20%20%20%20%5B'%E2%80%94%20%E2%80%94%20%E2%80%94%20EDIT%20%E2%80%94%20%E2%80%94%20%E2%80%94'%2C%20null%5D%2C%0A%20%20%20%20%5B'%E2%9C%8F%EF%B8%8F%20%20S%E1%BB%ADa%201%20release'%2C%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20async%20()%20%3D%3E%20%7B%20const%20v%20%3D%20prompt('idx%2FID%3A')%3B%20if%20(v)%20await%20editRelease(v)%3B%20%7D%5D%2C%0A%20%20%20%20%5B'%F0%9F%96%BC%EF%B8%8F%20%20%C4%90%E1%BB%95i%20artwork%20(upload)'%2C%20%20%20%20%20%20%20%20%20%20async%20()%20%3D%3E%20%7B%20const%20r%20%3D%20resolve(prompt('idx%2FID%3A'))%3B%20if%20(r)%20await%20editArtwork(r)%3B%20%7D%5D%2C%0A%20%20%20%20%5B'%F0%9F%94%97%20%C4%90%E1%BB%95i%20artwork%20t%E1%BB%AB%20URL'%2C%20%20%20%20%20%20%20%20%20%20%20%20async%20()%20%3D%3E%20%7B%0A%20%20%20%20%20%20const%20r%20%3D%20resolve(prompt('idx%2FID%3A'))%3B%20if%20(!r)%20return%3B%0A%20%20%20%20%20%20const%20u%20%3D%20prompt('URL%3A')%3B%20if%20(u)%20%7B%20await%20update(r.id%2C%20%7B%20artwork_url%3A%20u%20%7D)%3B%20ok('%E2%9C%85')%3B%20%7D%0A%20%20%20%20%7D%5D%2C%0A%20%20%20%20%5B'%F0%9F%8E%B5%20S%E1%BB%ADa%20track%20c%E1%BB%A7a%20release'%2C%20%20%20%20%20%20%20%20%20async%20()%20%3D%3E%20%7B%20const%20r%20%3D%20resolve(prompt('idx%2FID%3A'))%3B%20if%20(r)%20await%20editTrackMenu(r)%3B%20%7D%5D%2C%0A%20%20%20%20%5B'%E2%9A%A1%20Bulk%3A%20set%201%20field'%2C%20%20%20%20%20%20%20%20%20%20%20%20%20()%20%3D%3E%20bulkSetField()%5D%2C%0A%20%20%20%20%5B'%E2%9A%A1%20Bulk%3A%20artwork%20cho%20nhi%E1%BB%81u%20rel'%2C%20%20%20%20()%20%3D%3E%20bulkArtwork()%5D%2C%0A%20%20%20%20%5B'%E2%80%94%20%E2%80%94%20%E2%80%94%20DATA%20%E2%80%94%20%E2%80%94%20%E2%80%94'%2C%20null%5D%2C%0A%20%20%20%20%5B'%F0%9F%93%8A%20Export%20%E2%86%92%20CSV'%2C%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20()%20%3D%3E%20exportCSV()%5D%2C%0A%20%20%20%20%5B'%F0%9F%93%A6%20Export%20%E2%86%92%20JSON%20(full)'%2C%20%20%20%20%20%20%20%20%20%20()%20%3D%3E%20exportJSON()%5D%2C%0A%20%20%20%20%5B'%F0%9F%93%A5%20Restore%20t%E1%BB%AB%20JSON'%2C%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20()%20%3D%3E%20restore()%5D%2C%0A%20%20%20%20%5B'%E2%86%A9%EF%B8%8F%20%20Undo%20l%E1%BA%A7n%20cu%E1%BB%91i'%2C%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20()%20%3D%3E%20doUndo()%5D%2C%0A%20%20%20%20%5B'%E2%80%94%20%E2%80%94%20%E2%80%94%20H%E1%BB%86%20TH%E1%BB%90NG%20%E2%80%94%20%E2%80%94%20%E2%80%94'%2C%20null%5D%2C%0A%20%20%20%20%5B'%F0%9F%94%81%20Reload%20d%E1%BB%AF%20li%E1%BB%87u%20(fresh)'%2C%20%20%20%20%20%20%20%20async%20()%20%3D%3E%20%7B%20await%20load(true)%3B%20view(S.filter)%3B%20%7D%5D%2C%0A%20%20%20%20%5B'%E2%9A%99%EF%B8%8F%20%20Setup%20account%20%2F%20app'%2C%20%20%20%20%20%20%20%20%20%20()%20%3D%3E%20%7B%0A%20%20%20%20%20%20const%20a%20%3D%20prompt('App%20ID%3A'%2C%20S.appId%20%7C%7C%20'')%3B%0A%20%20%20%20%20%20const%20e%20%3D%20prompt('Email%3A'%2C%20S.email%20%7C%7C%20'')%3B%0A%20%20%20%20%20%20const%20x%20%3D%20prompt('Expected%20tracks%3A'%2C%20String(S.expected%20%7C%7C%20''))%3B%0A%20%20%20%20%20%20setup(a%2C%20e%2C%20x)%3B%0A%20%20%20%20%7D%5D%2C%0A%20%20%20%20%5B'%F0%9F%8F%B7%EF%B8%8F%20%20%C4%90%E1%BB%95i%20entity%20names'%2C%20%20%20%20%20%20%20%20%20%20%20%20%20()%20%3D%3E%20%7B%0A%20%20%20%20%20%20const%20r%20%3D%20prompt('Release%20entity%3A'%2C%20S.entities.release)%3B%0A%20%20%20%20%20%20const%20t%20%3D%20prompt('Track%20entity%3A'%2C%20S.entities.track)%3B%0A%20%20%20%20%20%20setEntities(r%2C%20t)%3B%0A%20%20%20%20%7D%5D%2C%0A%20%20%20%20%5B'%F0%9F%93%8B%20Config%20hi%E1%BB%87n%20t%E1%BA%A1i'%2C%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20()%20%3D%3E%20showConfig()%5D%2C%0A%20%20%20%20%5B'%F0%9F%94%A7%20Dry-run%20B%E1%BA%ACT%2FT%E1%BA%AET'%2C%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20()%20%3D%3E%20%7B%20S.dry%20%3D%20!S.dry%3B%20save()%3B%20log(%60Dry-run%3A%20%24%7BS.dry%20%3F%20'B%E1%BA%ACT%20%E2%9C%85'%20%3A%20'T%E1%BA%AET%20%E2%9D%8C'%7D%60%2C%20S.dry%20%3F%20C.g%20%3A%20C.y)%3B%20%7D%5D%2C%0A%20%20%20%20%5B'%F0%9F%93%9E%20Raw%20API%20call'%2C%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20()%20%3D%3E%20raw()%5D%2C%0A%20%20%20%20%5B'%E2%9D%93%20Help'%2C%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20()%20%3D%3E%20help()%5D%0A%20%20%5D%3B%0A%0A%20%20const%20menu%20%3D%20()%20%3D%3E%20%7B%0A%20%20%20%20line()%3B%0A%20%20%20%20log('%E2%95%94%E2%95%90%E2%95%90%E2%95%90%E2%95%90%E2%95%90%E2%95%90%E2%95%90%E2%95%90%E2%95%90%E2%95%90%E2%95%90%E2%95%90%E2%95%90%E2%95%90%E2%95%90%E2%95%90%E2%95%90%E2%95%90%E2%95%90%E2%95%90%E2%95%90%E2%95%90%E2%95%90%E2%95%90%E2%95%90%E2%95%90%E2%95%90%E2%95%90%E2%95%90%E2%95%90%E2%95%90%E2%95%90%E2%95%90%E2%95%90%E2%95%90%E2%95%90%E2%95%90%E2%95%90%E2%95%90%E2%95%90%E2%95%90%E2%95%90%E2%95%90%E2%95%90%E2%95%90%E2%95%90%E2%95%90%E2%95%90%E2%95%90%E2%95%90%E2%95%97'%2C%20C.g)%3B%0A%20%20%20%20log('%E2%95%91%20%20%F0%9F%8E%B5%20%20BASE44%20UNIVERSAL%20TOOLKIT%20%20v3.2%20%2BUpload%20%20%20%20%E2%95%91'%2C%20C.g)%3B%0A%20%20%20%20log('%E2%95%9A%E2%95%90%E2%95%90%E2%95%90%E2%95%90%E2%95%90%E2%95%90%E2%95%90%E2%95%90%E2%95%90%E2%95%90%E2%95%90%E2%95%90%E2%95%90%E2%95%90%E2%95%90%E2%95%90%E2%95%90%E2%95%90%E2%95%90%E2%95%90%E2%95%90%E2%95%90%E2%95%90%E2%95%90%E2%95%90%E2%95%90%E2%95%90%E2%95%90%E2%95%90%E2%95%90%E2%95%90%E2%95%90%E2%95%90%E2%95%90%E2%95%90%E2%95%90%E2%95%90%E2%95%90%E2%95%90%E2%95%90%E2%95%90%E2%95%90%E2%95%90%E2%95%90%E2%95%90%E2%95%90%E2%95%90%E2%95%90%E2%95%90%E2%95%90%E2%95%9D'%2C%20C.g)%3B%0A%20%20%20%20MENU.forEach((m%2C%20i)%20%3D%3E%20%7B%0A%20%20%20%20%20%20if%20(m%5B1%5D%20%3D%3D%3D%20null)%20%7B%20log(%60%20%20%20%24%7Bm%5B0%5D%7D%60%2C%20C.d)%3B%20return%3B%20%7D%0A%20%20%20%20%20%20console.log(%60%20%20%24%7BString(i).padStart(2%2C%20'%20')%7D.%20%20%24%7Bm%5B0%5D%7D%60)%3B%0A%20%20%20%20%7D)%3B%0A%20%20%20%20line()%3B%0A%20%20%20%20log(%60%F0%9F%91%89%20G%C3%B5%3A%20X.pick(%3Cs%E1%BB%91%3E)%60%2C%20C.g)%3B%0A%20%20%20%20log(%60%F0%9F%93%8A%20appId%3D%24%7BS.appId%3F.slice(0%2C%208)%20%7C%7C%20'%3F'%7D...%20email%3D%24%7BS.email%20%7C%7C%20'%3F'%7D%20dry%3D%24%7BS.dry%7D%20expected%3D%24%7BS.expected%7D%20cached%3D%24%7BS.cache.length%7D%60%2C%20C.p)%3B%0A%20%20%20%20line()%3B%0A%20%20%7D%3B%0A%0A%20%20const%20pick%20%3D%20async%20(n)%20%3D%3E%20%7B%0A%20%20%20%20const%20item%20%3D%20MENU%5Bn%5D%3B%0A%20%20%20%20if%20(!item)%20return%20err(%60Kh%C3%B4ng%20c%C3%B3%20l%E1%BB%B1a%20ch%E1%BB%8Dn%20%24%7Bn%7D%60)%3B%0A%20%20%20%20if%20(item%5B1%5D%20%3D%3D%3D%20null)%20return%20warn('%C4%90%C3%A2y%20l%C3%A0%20d%C3%B2ng%20ph%C3%A2n%20c%C3%A1ch')%3B%0A%20%20%20%20log(%60%E2%96%B6%EF%B8%8F%20%20%24%7Bitem%5B0%5D%7D%60%2C%20C.g)%3B%0A%20%20%20%20try%20%7B%0A%20%20%20%20%20%20if%20(!S.cache.length)%20await%20load()%3B%0A%20%20%20%20%20%20await%20item%5B1%5D()%3B%0A%20%20%20%20%7D%20catch%20(e)%20%7B%20err(%60L%E1%BB%97i%3A%20%24%7Be.message%7D%60)%3B%20console.error(e)%3B%20%7D%0A%20%20%7D%3B%0A%0A%20%20const%20help%20%3D%20()%20%3D%3E%20%7B%0A%20%20%20%20log('%5Cn%F0%9F%93%96%20H%C6%AF%E1%BB%9ANG%20D%E1%BA%AAN%20BASE44%20UNIVERSAL%20TOOLKIT%20v3.2'%2C%20C.g)%3B%0A%20%20%20%20console.log(%60%0A%E2%9A%A1%20SETUP%3A%0A%20%20%20X.setup(%22appId%22%2C%20%22email%22%2C%2026)%0A%0A%F0%9F%8E%B5%20UPLOAD%20MUSIC%3A%0A%20%20%20X.upload()%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%E2%86%92%20upload%20album%20m%E1%BB%9Bi%20(full%20flow)%0A%20%20%20X.addTracks(0)%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%E2%86%92%20th%C3%AAm%20tracks%20v%C3%A0o%20release%20idx%200%0A%20%20%20X.audioFor(0)%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%E2%86%92%20upload%20audio%20cho%201%20track%0A%20%20%20X.bulkUpload()%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%E2%86%92%20chia%20files%20cho%20nhi%E1%BB%81u%20release%0A%0A%20%20%20Flow%20upload%20album%20m%E1%BB%9Bi%3A%0A%20%20%20%20%201.%20Nh%E1%BA%ADp%20title%2C%20artist%2C%20genre%2C%20...%0A%20%20%20%20%202.%20Ch%E1%BB%8Dn%20artwork%20(optional)%0A%20%20%20%20%203.%20Ch%E1%BB%8Dn%20nhi%E1%BB%81u%20audio%20files%0A%20%20%20%20%204.%20T%E1%BB%B1%20upload%20%2B%20t%E1%BA%A1o%20Release%20%2B%20Tracks%0A%0A%F0%9F%93%8B%20MENU%3A%0A%20%20%20X.menu()%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%E2%86%92%20in%20menu%0A%20%20%20X.pick(17)%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%E2%86%92%20upload%20album%20m%E1%BB%9Bi%0A%20%20%20X.pick(18)%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%E2%86%92%20th%C3%AAm%20tracks%0A%20%20%20X.pick(19)%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%E2%86%92%20upload%20audio%20cho%20track%0A%0A%F0%9F%8E%AF%20ACTIONS%3A%0A%20%20%20await%20X.cancel(0)%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%E2%86%92%20cancel%20idx%200%0A%20%20%20await%20X.del(0)%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%E2%86%92%20xo%C3%A1%20(auto%20backup)%0A%20%20%20await%20X.set(0%2C%20%22title%22%2C%20%22new%22)%20%20%20%20%20%E2%86%92%20s%E1%BB%ADa%201%20field%0A%20%20%20X.edit(0)%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%E2%86%92%20s%E1%BB%ADa%20interactive%0A%20%20%20X.artwork(0)%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%E2%86%92%20upload%20artwork%0A%20%20%20X.track(0)%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%E2%86%92%20s%E1%BB%ADa%20track%0A%20%20%20X.undo()%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%E2%86%92%20undo%20l%E1%BA%A7n%20cu%E1%BB%91i%0A%0A%F0%9F%9B%9F%20AN%20TO%C3%80N%3A%0A%20%20%20X.dry(true)%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%E2%86%92%20m%C3%B4%20ph%E1%BB%8Fng%2C%20kh%C3%B4ng%20th%E1%BB%B1c%20thi%0A%0A%F0%9F%92%BE%20DATA%3A%0A%20%20%20X.csv()%20%20X.json()%20%20X.restore()%0A%20%20%20%20%60)%3B%0A%20%20%7D%3B%0A%0A%20%20%2F%2F%20%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%20PUBLIC%20API%20%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%0A%20%20window.X%20%3D%20%7B%0A%20%20%20%20%2F%2F%20Config%0A%20%20%20%20setup%2C%20cfg%3A%20showConfig%2C%20entities%3A%20setEntities%2C%0A%20%20%20%20dry%3A%20(on)%20%3D%3E%20%7B%20S.dry%20%3D%20!!on%3B%20save()%3B%20log(%60dry%3D%24%7BS.dry%7D%60%2C%20S.dry%20%3F%20C.g%20%3A%20C.y)%3B%20%7D%2C%0A%20%20%20%20state%3A%20S%2C%0A%0A%20%20%20%20%2F%2F%20Data%0A%20%20%20%20load%2C%20view%2C%20cache%3A%20()%20%3D%3E%20S.cache%2C%20find%2C%20info%3A%20detail%2C%20resolve%2C%0A%0A%20%20%20%20%2F%2F%20Actions%0A%20%20%20%20cancel%3A%20(v)%20%3D%3E%20doCancel(v)%2C%0A%20%20%20%20del%3A%20(v%2C%20opts)%20%3D%3E%20doDelete(v%2C%20opts)%2C%0A%20%20%20%20delete%3A%20(v%2C%20opts)%20%3D%3E%20doDelete(v%2C%20opts)%2C%0A%20%20%20%20backup%3A%20(v)%20%3D%3E%20doBackup(v)%2C%0A%20%20%20%20undo%3A%20doUndo%2C%0A%0A%20%20%20%20%2F%2F%20Bulk%0A%20%20%20%20cancelMany%3A%20bulkCancel%2C%20deleteMany%3A%20bulkDelete%2C%20backupMany%3A%20bulkBackup%2C%0A%20%20%20%20bulkSet%3A%20bulkSetField%2C%20bulkArtwork%2C%0A%0A%20%20%20%20%2F%2F%20Upload%20music%0A%20%20%20%20upload%3A%20uploadMusic%2C%0A%20%20%20%20addTracks%3A%20addTracks%2C%0A%20%20%20%20audioFor%3A%20uploadAudioForTrack%2C%0A%20%20%20%20bulkUpload%3A%20bulkAddTracks%2C%0A%20%20%20%20uploadFile%2C%0A%0A%20%20%20%20%2F%2F%20Edit%0A%20%20%20%20edit%3A%20editRelease%2C%0A%20%20%20%20set%3A%20(v%2C%20k%2C%20val)%20%3D%3E%20%7B%0A%20%20%20%20%20%20const%20r%20%3D%20resolve(v)%3B%0A%20%20%20%20%20%20return%20r%20%3F%20update(r.id%2C%20%7B%20%5Bk%5D%3A%20val%20%7D).then(x%20%3D%3E%20%7B%20if%20(x.ok)%20r%5Bk%5D%20%3D%20val%3B%20%7D)%20%3A%20err('Kh%C3%B4ng%20t%C3%ACm%20th%E1%BA%A5y')%3B%0A%20%20%20%20%7D%2C%0A%20%20%20%20artwork%3A%20async%20(v)%20%3D%3E%20%7B%20const%20r%20%3D%20resolve(v)%3B%20if%20(r)%20await%20editArtwork(r)%3B%20%7D%2C%0A%20%20%20%20artworkUrl%3A%20async%20(v%2C%20u)%20%3D%3E%20%7B%20const%20r%20%3D%20resolve(v)%3B%20if%20(r)%20await%20update(r.id%2C%20%7B%20artwork_url%3A%20u%20%7D)%3B%20%7D%2C%0A%20%20%20%20track%3A%20async%20(v)%20%3D%3E%20%7B%20const%20r%20%3D%20resolve(v)%3B%20if%20(r)%20await%20editTrackMenu(r)%3B%20%7D%2C%0A%0A%20%20%20%20%2F%2F%20Export%0A%20%20%20%20csv%3A%20exportCSV%2C%20json%3A%20exportJSON%2C%20restore%2C%0A%0A%20%20%20%20%2F%2F%20UI%0A%20%20%20%20menu%2C%20pick%2C%20help%2C%20raw%2C%20api%2C%0A%0A%20%20%20%20%2F%2F%20Fields%0A%20%20%20%20fields%3A%20()%20%3D%3E%20(%7B%0A%20%20%20%20%20%20release%3A%20RF.map((%5Bk%2C%20l%2C%20t%5D)%20%3D%3E%20(%7B%20key%3A%20k%2C%20label%3A%20l%2C%20type%3A%20t%20%7D))%2C%0A%20%20%20%20%20%20track%3A%20TF.map((%5Bk%2C%20l%2C%20t%5D)%20%3D%3E%20(%7B%20key%3A%20k%2C%20label%3A%20l%2C%20type%3A%20t%20%7D))%0A%20%20%20%20%7D)%0A%20%20%7D%3B%0A%0A%20%20%2F%2F%20%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%20BOOT%20%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%0A%20%20log('%5Cn%F0%9F%8E%B5%20BASE44%20UNIVERSAL%20TOOLKIT%20v3.2%20ready%20(%2BUpload%20Music)'%2C%20C.g)%3B%0A%20%20console.log('Config%3A'%2C%20%7B%0A%20%20%20%20appId%3A%20S.appId%2C%20email%3A%20S.email%2C%20expected%3A%20S.expected%2C%0A%20%20%20%20dryRun%3A%20S.dry%2C%20token%3A%20%24tok()%20%3F%20'%E2%9C%85'%20%3A%20'%E2%9D%8C'%0A%20%20%7D)%3B%0A%20%20if%20(!S.appId)%20warn('%E2%9A%A0%EF%B8%8F%20Ch%C6%B0a%20c%C3%B3%20appId%20%E2%86%92%20X.setup()')%3B%0A%20%20if%20(!S.email)%20warn('%E2%9A%A0%EF%B8%8F%20Ch%C6%B0a%20c%C3%B3%20email%20%E2%86%92%20X.setup()')%3B%0A%20%20log('%F0%9F%91%89%20X.menu()%20%7C%20X.help()%20%7C%20X.upload()%5Cn'%2C%20C.g)%3B%0A%7D)()%3B%7D)()%3B
+/* ==================================================================
+ *  BASE44 FLOATING TOOLKIT  v5.0 FINAL — Safe Edition
+ *  - Panel nổi kéo thả, nhớ vị trí
+ *  - DOUBLE-CONFIRM cho mọi thao tác phá huỷ
+ *  - Giải thích rõ từng bước, tránh thao tác nhầm
+ *  - Full: list/cancel/delete/backup/undo/upload/edit/bulk
+ * ================================================================== */
+(() => {
+  'use strict';
+
+  // ═══════════════════════════════════════════════════════════
+  //  1. CORE — state, token, api
+  // ═══════════════════════════════════════════════════════════
+  const $tok = () =>
+    localStorage.getItem('base44_access_token') ||
+    sessionStorage.getItem('base44_access_token') ||
+    (document.cookie.match(/base44_access_token=([^;]+)/) || [])[1];
+
+  const $detectApp = () => {
+    const m = location.pathname.match(/\/api\/apps\/([a-f0-9]{20,})/i);
+    if (m) return m[1];
+    for (const e of performance.getEntriesByType('resource')) {
+      const x = e.name.match(/\/api\/apps\/([a-f0-9]{20,})\//i);
+      if (x) return x[1];
+    }
+    return null;
+  };
+  const $decodeEmail = () => {
+    try {
+      const t = $tok(); if (!t) return null;
+      const p = JSON.parse(atob(t.split('.')[1]));
+      return p.email || p.user_email || p.sub || null;
+    } catch { return null; }
+  };
+
+  const S = {
+    appId: localStorage.getItem('b44_app') || $detectApp(),
+    email: localStorage.getItem('b44_email') || $decodeEmail(),
+    expected: +localStorage.getItem('b44_exp') || 0,
+    dry: localStorage.getItem('b44_dry') === '1',
+    entities: JSON.parse(localStorage.getItem('b44_ent') || '{"release":"Release","track":"Track"}'),
+    cache: [], undo: [], view: [], filter: 'all',
+    ui: JSON.parse(localStorage.getItem('b44_ui') || '{}')
+  };
+  const save = () => {
+    if (S.appId) localStorage.setItem('b44_app', S.appId);
+    if (S.email) localStorage.setItem('b44_email', S.email);
+    localStorage.setItem('b44_exp', S.expected);
+    localStorage.setItem('b44_dry', S.dry ? '1' : '0');
+    localStorage.setItem('b44_ent', JSON.stringify(S.entities));
+  };
+  const saveUI = () => localStorage.setItem('b44_ui', JSON.stringify(S.ui));
+
+  const api = async (path, opts = {}) => {
+    const tk = $tok();
+    if (!tk) throw new Error('Chưa đăng nhập — không tìm thấy token');
+    const isForm = opts.body instanceof FormData;
+    const r = await fetch(path, {
+      credentials: 'include', ...opts,
+      headers: {
+        ...(isForm ? {} : { 'Content-Type': 'application/json' }),
+        'Authorization': `Bearer ${tk}`,
+        ...(opts.headers || {})
+      }
+    });
+    const text = await r.text();
+    let data; try { data = JSON.parse(text); } catch { data = text.slice(0, 400); }
+    return { ok: r.ok, status: r.status, data };
+  };
+  const unwrap = d => Array.isArray(d) ? d : (d?.data || d?.items || d?.records || []);
+  const ent = k => `/api/apps/${S.appId}/entities/${S.entities[k] || k}`;
+  const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+  // ═══════════════════════════════════════════════════════════
+  //  2. DATA
+  // ═══════════════════════════════════════════════════════════
+  const load = async (force = false) => {
+    if (!S.appId || !S.email) throw new Error('Cần setup trước (appId + email)');
+    if (S.cache.length && !force) return S.cache;
+    const q = { artist_email: S.email };
+    const r = await api(`${ent('release')}?q=${encodeURIComponent(JSON.stringify(q))}&sort=-created_date&limit=500`);
+    const rels = unwrap(r.data);
+    const out = [];
+    for (const rel of rels) {
+      const t = await api(`${ent('track')}?q=${encodeURIComponent(JSON.stringify({ release_id: rel.id }))}&limit=500`);
+      const tracks = unwrap(t.data);
+      out.push({ ...rel, __tracks: tracks, __trackCount: tracks.length });
+    }
+    S.cache = out;
+    return out;
+  };
+  const resolve = v => {
+    if (v == null) return null;
+    if (typeof v === 'number' || /^\d+$/.test(String(v))) return S.cache[+v] || null;
+    return S.cache.find(r => r.id === v) || null;
+  };
+  const FILTERS = {
+    all: () => true,
+    pending: r => r.status === 'pending',
+    stuck: r => S.expected > 0 && r.__trackCount > 0 && r.__trackCount < S.expected,
+    cancelled: r => r.status === 'cancelled',
+    live: r => r.status === 'live',
+    empty: r => r.__trackCount === 0
+  };
+  const view = (f = 'all') => { S.filter = f; S.view = S.cache.filter(FILTERS[f] || FILTERS.all); return S.view; };
+  const strip = r => { const { __tracks, __trackCount, ...rest } = r; return rest; };
+
+  // ═══════════════════════════════════════════════════════════
+  //  3. CRUD
+  // ═══════════════════════════════════════════════════════════
+  const update = async (id, patch, k = 'release') => {
+    if (S.dry) { toast('🧪 DRY: không gửi request', 'warn'); return { ok: true, dry: true }; }
+    return api(`${ent(k)}/${id}`, { method: 'PUT', body: JSON.stringify({ ...patch, updated_date: new Date().toISOString() }) });
+  };
+  const remove = async (id, k = 'release') => {
+    if (S.dry) { toast('🧪 DRY: không gửi DELETE', 'warn'); return { ok: true, dry: true }; }
+    return api(`${ent(k)}/${id}`, { method: 'DELETE' });
+  };
+  const create = async (data, k = 'release') => {
+    if (S.dry) { toast('🧪 DRY: không gửi CREATE', 'warn'); return { ok: true, data: { id: 'dry-' + Date.now(), ...data } }; }
+    return api(`${ent(k)}`, { method: 'POST', body: JSON.stringify(data) });
+  };
+
+  const doCancel = async (r) => {
+    const now = new Date().toISOString();
+    const res = await update(r.id, { status: 'cancelled', distribution_status: 'cancelled', cancelled_at: now });
+    if (res.ok) r.status = 'cancelled';
+    return res;
+  };
+  const doDelete = async (r, { backup = true } = {}) => {
+    if (backup) doBackup(r);
+    S.undo.push({ type: 'delete', release: r, tracks: r.__tracks, ts: Date.now() });
+    for (const t of r.__tracks || []) await remove(t.id, 'track');
+    const res = await remove(r.id, 'release');
+    if (res.ok) S.cache = S.cache.filter(x => x.id !== r.id);
+    return res;
+  };
+  const doBackup = (r) => {
+    dlJSON({
+      exportedAt: new Date().toISOString(), appId: S.appId, email: S.email,
+      release: strip(r), tracks: r.__tracks
+    }, `backup_${r.id}_${Date.now()}.json`);
+  };
+  const doUndo = async () => {
+    const last = S.undo.pop();
+    if (!last) return { ok: false, msg: 'Không có gì để undo' };
+    const { id, created_date, updated_date, __tracks, __trackCount, ...rest } = last.release;
+    const r1 = await create(rest, 'release');
+    if (!r1.ok) return r1;
+    for (const t of last.tracks || []) {
+      const { id, release_id, ...tr } = t;
+      await create({ ...tr, release_id: r1.data.id }, 'track');
+    }
+    await load(true);
+    return r1;
+  };
+
+  // ═══════════════════════════════════════════════════════════
+  //  4. DOWNLOAD & UPLOAD
+  // ═══════════════════════════════════════════════════════════
+  const dl = (content, filename, mime = 'text/plain') => {
+    const blob = new Blob([content], { type: mime + ';charset=utf-8' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob); a.download = filename;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+  };
+  const dlJSON = (o, name) => dl(JSON.stringify(o, null, 2), name, 'application/json');
+  const dlCSV = (rows, name) => {
+    const cols = ['id', 'title', 'status', 'trackCount', 'isrc', 'upc', 'release_date', 'created_date'];
+    const q = v => `"${String(v ?? '').replace(/"/g, '""')}"`;
+    const body = rows.map(r => [
+      r.id, r.title || r.name, r.status, r.__trackCount, r.isrc, r.upc, r.release_date, r.created_date
+    ].map(q).join(',')).join('\n');
+    dl('\ufeff' + cols.join(',') + '\n' + body, name, 'text/csv');
+  };
+
+  const pickFile = (accept = '*/*') => new Promise(res => {
+    const inp = document.createElement('input');
+    inp.type = 'file'; inp.accept = accept;
+    inp.onchange = () => res(inp.files[0] || null);
+    inp.click();
+  });
+  const pickFiles = (accept = '*/*') => new Promise(res => {
+    const inp = document.createElement('input');
+    inp.type = 'file'; inp.accept = accept; inp.multiple = true;
+    inp.onchange = () => res([...inp.files]);
+    inp.click();
+  });
+  const uploadFile = async (file, onProgress) => {
+    const tk = $tok();
+    const fd = new FormData();
+    fd.append('file', file, file.name);
+    if (onProgress) onProgress(0);
+    const r = await fetch(`/api/apps/${S.appId}/integration-endpoints/Core/UploadFile`, {
+      method: 'POST', credentials: 'include',
+      headers: { 'Authorization': `Bearer ${tk}` },
+      body: fd
+    });
+    const d = await r.json();
+    if (!r.ok) throw new Error(d?.message || `Upload ${r.status}`);
+    if (onProgress) onProgress(100);
+    return d.file_url || d.url || d.public_url || d.data?.file_url;
+  };
+  const titleFromFilename = (name) =>
+    name.replace(/\.[^.]+$/, '').replace(/[_-]+/g, ' ').replace(/\s+/g, ' ').trim();
+
+  // ═══════════════════════════════════════════════════════════
+  //  5. STYLES
+  // ═══════════════════════════════════════════════════════════
+  const CSS = `
+    .b44-root *{box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+    #b44-panel{position:fixed;z-index:2147483647;width:360px;max-height:88vh;background:#0d1117;color:#e6edf3;border:1px solid #30363d;border-radius:14px;box-shadow:0 20px 60px rgba(0,0,0,.65),0 0 0 1px rgba(255,255,255,.05);font-size:13px;display:flex;flex-direction:column;overflow:hidden;user-select:none;transition:opacity .15s}
+    #b44-panel.b44-collapsed{width:auto;height:auto;max-height:none}
+    #b44-panel.b44-collapsed .b44-body{display:none}
+    #b44-panel.b44-collapsed #b44-header{border-radius:14px}
+    #b44-panel.b44-mini{width:auto}
+    #b44-header{display:flex;align-items:center;gap:8px;padding:11px 13px;background:linear-gradient(135deg,#1652F0,#0f3fb8);cursor:grab;border-radius:14px 14px 0 0;font-weight:700;color:#fff;font-size:13px;letter-spacing:.01em}
+    #b44-header:active{cursor:grabbing}
+    #b44-header .b44-dot{width:8px;height:8px;border-radius:50%;background:#4ade80;box-shadow:0 0 8px #4ade80;flex-shrink:0;animation:b44-pulse 2s infinite}
+    #b44-header .b44-title{flex:1}
+    #b44-header button{background:rgba(255,255,255,.15);border:none;color:#fff;width:26px;height:26px;border-radius:6px;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;transition:background .15s;line-height:1}
+    #b44-header button:hover{background:rgba(255,255,255,.3)}
+    @keyframes b44-pulse{0%,100%{opacity:1}50%{opacity:.5}}
+    .b44-body{overflow-y:auto;overflow-x:hidden;flex:1;padding:8px 0;scrollbar-width:thin;scrollbar-color:#30363d transparent}
+    .b44-body::-webkit-scrollbar{width:6px}
+    .b44-body::-webkit-scrollbar-thumb{background:#30363d;border-radius:3px}
+    .b44-body::-webkit-scrollbar-thumb:hover{background:#484f58}
+    .b44-section{padding:10px 13px 4px;color:#7d8590;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em}
+    .b44-btn{display:flex;align-items:center;gap:9px;width:100%;padding:9px 13px;background:transparent;border:none;color:#e6edf3;font-size:13px;cursor:pointer;text-align:left;transition:background .1s;font-family:inherit}
+    .b44-btn:hover{background:rgba(22,82,240,.15)}
+    .b44-btn:active{background:rgba(22,82,240,.25)}
+    .b44-btn.b44-danger:hover{background:rgba(220,38,38,.2)}
+    .b44-btn.b44-primary{background:rgba(22,82,240,.18)}
+    .b44-btn.b44-primary:hover{background:rgba(22,82,240,.3)}
+    .b44-btn .b44-icon{width:20px;text-align:center;flex-shrink:0;font-size:15px}
+    .b44-btn .b44-label{flex:1}
+    .b44-btn .b44-hint{color:#7d8590;font-size:11px;font-weight:400;display:block;margin-top:2px}
+    .b44-input,.b44-select{width:calc(100% - 26px);margin:4px 13px;padding:7px 10px;background:#161b22;color:#e6edf3;border:1px solid #30363d;border-radius:7px;font-size:12px;font-family:inherit}
+    .b44-input:focus,.b44-select:focus{outline:none;border-color:#1652F0;box-shadow:0 0 0 2px rgba(22,82,240,.2)}
+    .b44-list{max-height:340px;overflow-y:auto}
+    .b44-item{display:flex;align-items:center;gap:8px;padding:8px 13px;cursor:pointer;border-left:3px solid transparent;transition:all .1s}
+    .b44-item:hover{background:rgba(22,82,240,.1)}
+    .b44-item .b44-item-info{flex:1;min-width:0}
+    .b44-item .b44-item-title{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12.5px}
+    .b44-item .b44-item-meta{color:#7d8590;font-size:11px;margin-top:2px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+    .b44-item .b44-item-actions{display:flex;gap:4px;opacity:.6;transition:opacity .15s}
+    .b44-item:hover .b44-item-actions{opacity:1}
+    .b44-item .b44-item-actions button{background:transparent;border:1px solid #30363d;color:#e6edf3;width:28px;height:28px;border-radius:6px;cursor:pointer;font-size:13px;padding:0;display:flex;align-items:center;justify-content:center;transition:all .1s}
+    .b44-item .b44-item-actions button:hover{background:rgba(22,82,240,.3);border-color:#1652F0}
+    .b44-item .b44-item-actions button.b44-danger:hover{background:rgba(220,38,38,.3);border-color:#dc2626}
+    .b44-badge{display:inline-block;padding:1px 7px;border-radius:9px;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.03em}
+    .b44-badge.pending{background:#f59e0b22;color:#f59e0b}
+    .b44-badge.cancelled{background:#6b728022;color:#9ca3af}
+    .b44-badge.live{background:#10b98122;color:#10b981}
+    .b44-badge.draft{background:#8b5cf622;color:#a78bfa}
+    .b44-badge.stuck{background:#ef444422;color:#ef4444;font-weight:700}
+    .b44-badge.rejected{background:#dc262622;color:#dc2626}
+    .b44-toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#0d1117;color:#e6edf3;border:1px solid #30363d;border-radius:9px;padding:11px 18px;font-size:13px;font-weight:500;box-shadow:0 10px 40px rgba(0,0,0,.7);z-index:2147483648;max-width:520px;animation:b44-toast-in .22s ease-out;font-family:-apple-system,system-ui,sans-serif;line-height:1.4}
+    .b44-toast.ok{border-color:#10b981;color:#10b981}
+    .b44-toast.err{border-color:#ef4444;color:#ef4444}
+    .b44-toast.warn{border-color:#f59e0b;color:#f59e0b}
+    @keyframes b44-toast-in{from{opacity:0;transform:translateX(-50%) translateY(12px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+    .b44-modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:2147483646;display:flex;align-items:center;justify-content:center;animation:b44-fade .18s;padding:20px;overflow-y:auto}
+    .b44-modal{background:#0d1117;color:#e6edf3;border:1px solid #30363d;border-radius:14px;padding:22px;max-width:480px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.85);font-family:-apple-system,system-ui,sans-serif;user-select:text;max-height:90vh;overflow-y:auto}
+    .b44-modal.danger{border-color:#dc2626;box-shadow:0 20px 60px rgba(220,38,38,.35),0 0 0 3px rgba(220,38,38,.15)}
+    .b44-modal.warn{border-color:#f59e0b}
+    .b44-modal h3{margin:0 0 6px;font-size:16px;line-height:1.35;display:flex;align-items:center;gap:8px}
+    .b44-modal .b44-sub{color:#7d8590;font-size:12px;margin-bottom:16px;line-height:1.5}
+    .b44-modal .b44-info{background:#161b22;border:1px solid #21262d;border-radius:9px;padding:12px;margin:12px 0;font-size:12.5px}
+    .b44-modal .b44-info-row{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid #21262d;gap:12px}
+    .b44-modal .b44-info-row:last-child{border-bottom:none}
+    .b44-modal .b44-info-row .k{color:#7d8590;flex-shrink:0}
+    .b44-modal .b44-info-row .v{color:#e6edf3;text-align:right;word-break:break-word;min-width:0}
+    .b44-modal .b44-warn-box{background:rgba(220,38,38,.1);border:1px solid rgba(220,38,38,.35);border-radius:9px;padding:11px 13px;margin:14px 0;font-size:12.5px;line-height:1.55;color:#fca5a5}
+    .b44-modal .b44-warn-box.warn{background:rgba(245,158,11,.1);border-color:rgba(245,158,11,.35);color:#fcd34d}
+    .b44-modal .b44-warn-box strong{color:#fecaca;display:block;margin-bottom:5px}
+    .b44-modal .b44-warn-box.warn strong{color:#fde68a}
+    .b44-modal label{display:block;font-size:11.5px;color:#7d8590;margin-bottom:5px;font-weight:600;letter-spacing:.02em}
+    .b44-modal input,.b44-modal select,.b44-modal textarea{width:100%;padding:9px 11px;background:#161b22;color:#e6edf3;border:1px solid #30363d;border-radius:7px;font-size:13px;margin-bottom:11px;font-family:inherit;transition:border-color .15s}
+    .b44-modal input:focus,.b44-modal select:focus,.b44-modal textarea:focus{outline:none;border-color:#1652F0;box-shadow:0 0 0 2px rgba(22,82,240,.2)}
+    .b44-modal input.b44-type-confirm{font-family:ui-monospace,SFMono-Regular,monospace;letter-spacing:.05em}
+    .b44-modal input.b44-type-confirm.match{border-color:#10b981;box-shadow:0 0 0 2px rgba(16,185,129,.2)}
+    .b44-modal-actions{display:flex;gap:9px;justify-content:flex-end;margin-top:16px;flex-wrap:wrap}
+    .b44-modal-actions button{padding:9px 18px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;border:1px solid #30363d;background:transparent;color:#e6edf3;font-family:inherit;transition:all .12s}
+    .b44-modal-actions button:hover{background:#21262d}
+    .b44-modal-actions button.b44-primary{background:#1652F0;border-color:#1652F0;color:#fff}
+    .b44-modal-actions button.b44-primary:hover{background:#1241C4}
+    .b44-modal-actions button.b44-danger{background:#dc2626;border-color:#dc2626;color:#fff}
+    .b44-modal-actions button.b44-danger:hover{background:#b91c1c}
+    .b44-modal-actions button:disabled{opacity:.4;cursor:not-allowed;background:#21262d;border-color:#30363d;color:#7d8590}
+    .b44-modal-actions button:disabled:hover{background:#21262d}
+    .b44-steps{display:flex;gap:6px;margin-bottom:14px;font-size:10.5px;color:#7d8590;align-items:center}
+    .b44-step{display:flex;align-items:center;gap:5px}
+    .b44-step .num{width:18px;height:18px;border-radius:50%;background:#21262d;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:10px;color:#7d8590}
+    .b44-step.active .num{background:#1652F0;color:#fff}
+    .b44-step.active{color:#e6edf3}
+    .b44-step.done .num{background:#10b981;color:#fff}
+    .b44-step-arrow{color:#484f58}
+    @keyframes b44-fade{from{opacity:0}to{opacity:1}}
+    .b44-progress{height:4px;background:#21262d;border-radius:2px;overflow:hidden;margin:12px 0}
+    .b44-progress-bar{height:100%;background:linear-gradient(90deg,#1652F0,#10b981);transition:width .2s;border-radius:2px}
+    .b44-footer{padding:9px 13px;color:#484f58;font-size:10px;text-align:center;border-top:1px solid #21262d;line-height:1.5}
+    .b44-footer .b44-footer-line{display:flex;justify-content:space-between;gap:8px;font-family:ui-monospace,monospace}
+    @media (max-width:500px){#b44-panel{width:calc(100vw - 20px);max-width:360px}}
+  `;
+  const injectCSS = () => {
+    if (document.getElementById('b44-style')) return;
+    const s = document.createElement('style');
+    s.id = 'b44-style'; s.textContent = CSS;
+    document.head.appendChild(s);
+  };
+
+  // ═══════════════════════════════════════════════════════════
+  //  6. TOAST
+  // ═══════════════════════════════════════════════════════════
+  let toastTimer;
+  const toast = (msg, type = '', ms = 2600) => {
+    document.querySelectorAll('.b44-toast').forEach(t => t.remove());
+    const t = document.createElement('div');
+    t.className = 'b44-toast b44-root ' + type;
+    t.textContent = msg;
+    document.body.appendChild(t);
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => {
+      t.style.transition = 'opacity .3s, transform .3s';
+      t.style.opacity = '0';
+      t.style.transform = 'translateX(-50%) translateY(8px)';
+      setTimeout(() => t.remove(), 300);
+    }, ms);
+  };
+
+  // ═══════════════════════════════════════════════════════════
+  //  7. MODAL SYSTEM — single, multi-step, type-to-confirm
+  // ═══════════════════════════════════════════════════════════
+  const buildModal = (opts) => {
+    const bg = document.createElement('div');
+    bg.className = 'b44-modal-bg b44-root';
+    const m = document.createElement('div');
+    m.className = 'b44-modal' + (opts.variant ? ' ' + opts.variant : '');
+    bg.appendChild(m);
+    document.body.appendChild(bg);
+    return { bg, modal: m };
+  };
+
+  // Simple info modal (single step, no input)
+  const infoModal = (title, { subtitle, info, warn, warnType = 'danger', okText = 'OK', cancelText = 'Huỷ', danger = false } = {}) =>
+    new Promise(res => {
+      const { bg, modal } = buildModal({ variant: danger ? 'danger' : (warnType === 'warn' ? 'warn' : '') });
+      const h = document.createElement('h3');
+      h.innerHTML = esc(title);
+      modal.appendChild(h);
+      if (subtitle) {
+        const s = document.createElement('div');
+        s.className = 'b44-sub'; s.innerHTML = subtitle;
+        modal.appendChild(s);
+      }
+      if (info && Object.keys(info).length) {
+        const box = document.createElement('div');
+        box.className = 'b44-info';
+        box.innerHTML = Object.entries(info).map(([k, v]) =>
+          `<div class="b44-info-row"><span class="k">${esc(k)}</span><span class="v">${esc(v)}</span></div>`
+        ).join('');
+        modal.appendChild(box);
+      }
+      if (warn) {
+        const w = document.createElement('div');
+        w.className = 'b44-warn-box' + (warnType === 'warn' ? ' warn' : '');
+        w.innerHTML = warn;
+        modal.appendChild(w);
+      }
+      const acts = document.createElement('div');
+      acts.className = 'b44-modal-actions';
+      const cancelBtn = document.createElement('button');
+      cancelBtn.textContent = cancelText;
+      const okBtn = document.createElement('button');
+      okBtn.className = danger ? 'b44-danger' : 'b44-primary';
+      okBtn.textContent = okText;
+      acts.append(cancelBtn, okBtn);
+      modal.appendChild(acts);
+      const close = v => { bg.remove(); document.removeEventListener('keydown', onKey); res(v); };
+      cancelBtn.onclick = () => close(false);
+      okBtn.onclick = () => close(true);
+      bg.onclick = e => { if (e.target === bg) close(false); };
+      const onKey = e => {
+        if (e.key === 'Escape') cancelBtn.click();
+        if (e.key === 'Enter') okBtn.click();
+      };
+      document.addEventListener('keydown', onKey);
+      setTimeout(() => okBtn.focus(), 60);
+    });
+
+  // Form modal (single step with inputs)
+  const formModal = (title, fields, { subtitle, okText = 'Tiếp tục', cancelText = 'Huỷ', stepInfo } = {}) =>
+    new Promise(res => {
+      const { bg, modal } = buildModal({});
+      if (stepInfo) {
+        const steps = document.createElement('div');
+        steps.className = 'b44-steps';
+        steps.innerHTML = stepInfo.map((s, i) => {
+          const cls = s.state === 'active' ? 'active' : (s.state === 'done' ? 'done' : '');
+          const el = `<div class="b44-step ${cls}"><span class="num">${s.state === 'done' ? '✓' : i + 1}</span><span>${esc(s.label)}</span></div>`;
+          return i < stepInfo.length - 1 ? el + '<span class="b44-step-arrow">›</span>' : el;
+        }).join('');
+        modal.appendChild(steps);
+      }
+      const h = document.createElement('h3');
+      h.innerHTML = esc(title);
+      modal.appendChild(h);
+      if (subtitle) {
+        const s = document.createElement('div');
+        s.className = 'b44-sub'; s.innerHTML = subtitle;
+        modal.appendChild(s);
+      }
+      const inputs = [];
+      fields.forEach(f => {
+        const label = document.createElement('label');
+        label.textContent = f.label || f.key;
+        if (f.hint) {
+          const hh = document.createElement('span');
+          hh.style.cssText = 'color:#484f58;font-weight:400;margin-left:6px';
+          hh.textContent = '· ' + f.hint;
+          label.appendChild(hh);
+        }
+        modal.appendChild(label);
+        let el;
+        if (f.options) {
+          el = document.createElement('select');
+          f.options.forEach(o => {
+            const opt = document.createElement('option');
+            opt.value = typeof o === 'object' ? o.value : o;
+            opt.textContent = typeof o === 'object' ? o.label : o;
+            if (String(opt.value) === String(f.value ?? '')) opt.selected = true;
+            el.appendChild(opt);
+          });
+        } else if (f.type === 'textarea') {
+          el = document.createElement('textarea');
+          el.rows = 3;
+          el.value = f.value ?? '';
+        } else {
+          el = document.createElement('input');
+          el.type = f.type || 'text';
+          el.placeholder = f.placeholder || '';
+          el.value = f.value ?? '';
+        }
+        if (f.required) el.required = true;
+        modal.appendChild(el);
+        inputs.push({ key: f.key, el, required: f.required });
+      });
+      const acts = document.createElement('div');
+      acts.className = 'b44-modal-actions';
+      const cancelBtn = document.createElement('button');
+      cancelBtn.textContent = cancelText;
+      const okBtn = document.createElement('button');
+      okBtn.className = 'b44-primary';
+      okBtn.textContent = okText;
+      acts.append(cancelBtn, okBtn);
+      modal.appendChild(acts);
+      const close = v => { bg.remove(); document.removeEventListener('keydown', onKey); res(v); };
+      cancelBtn.onclick = () => close(null);
+      okBtn.onclick = () => {
+        const out = {};
+        for (const { key, el, required } of inputs) {
+          const v = el.value.trim();
+          if (required && !v) { el.focus(); el.style.borderColor = '#dc2626'; return; }
+          out[key] = v;
+        }
+        close(out);
+      };
+      bg.onclick = e => { if (e.target === bg) close(null); };
+      const onKey = e => {
+        if (e.key === 'Escape') cancelBtn.click();
+        if (e.key === 'Enter' && e.target.tagName !== 'TEXTAREA') okBtn.click();
+      };
+      document.addEventListener('keydown', onKey);
+      setTimeout(() => inputs[0]?.el?.focus(), 60);
+    });
+
+  // Type-to-confirm modal (the SAFE step — user must type exact word)
+  const typeConfirmModal = (title, { subtitle, info, word, wordLabel, warnText, okText = 'XÁC NHẬN XOÁ', danger = true }) =>
+    new Promise(res => {
+      const { bg, modal } = buildModal({ variant: danger ? 'danger' : 'warn' });
+      const steps = document.createElement('div');
+      steps.className = 'b44-steps';
+      steps.innerHTML = `
+        <div class="b44-step done"><span class="num">✓</span><span>Chọn đối tượng</span></div>
+        <span class="b44-step-arrow">›</span>
+        <div class="b44-step active"><span class="num">2</span><span>Xác nhận</span></div>
+      `;
+      modal.appendChild(steps);
+
+      const h = document.createElement('h3');
+      h.innerHTML = '🛑 ' + esc(title);
+      modal.appendChild(h);
+
+      if (subtitle) {
+        const s = document.createElement('div');
+        s.className = 'b44-sub'; s.innerHTML = subtitle;
+        modal.appendChild(s);
+      }
+      if (info && Object.keys(info).length) {
+        const box = document.createElement('div');
+        box.className = 'b44-info';
+        box.innerHTML = Object.entries(info).map(([k, v]) =>
+          `<div class="b44-info-row"><span class="k">${esc(k)}</span><span class="v">${esc(v)}</span></div>`
+        ).join('');
+        modal.appendChild(box);
+      }
+      const warn = document.createElement('div');
+      warn.className = 'b44-warn-box';
+      warn.innerHTML = warnText || '<strong>⚠️ HÀNH ĐỘNG KHÔNG THỂ HOÀN TÁC</strong>Dữ liệu sẽ bị xoá vĩnh viễn khỏi hệ thống. Bạn không thể khôi phục sau khi xác nhận.';
+      modal.appendChild(warn);
+
+      const label = document.createElement('label');
+      label.innerHTML = wordLabel || `Gõ chính xác <code style="background:#161b22;padding:2px 6px;border-radius:4px;color:#f59e0b;font-family:ui-monospace,monospace">${esc(word)}</code> để xác nhận:`;
+      modal.appendChild(label);
+
+      const inp = document.createElement('input');
+      inp.className = 'b44-type-confirm';
+      inp.placeholder = word;
+      inp.autocomplete = 'off';
+      inp.spellcheck = false;
+      modal.appendChild(inp);
+
+      const acts = document.createElement('div');
+      acts.className = 'b44-modal-actions';
+      const cancelBtn = document.createElement('button');
+      cancelBtn.textContent = 'Huỷ';
+      const okBtn = document.createElement('button');
+      okBtn.className = danger ? 'b44-danger' : 'b44-primary';
+      okBtn.textContent = okText;
+      okBtn.disabled = true;
+      acts.append(cancelBtn, okBtn);
+      modal.appendChild(acts);
+
+      inp.oninput = () => {
+        const match = inp.value.trim() === word;
+        inp.classList.toggle('match', match);
+        okBtn.disabled = !match;
+      };
+      const close = v => { bg.remove(); document.removeEventListener('keydown', onKey); res(v); };
+      cancelBtn.onclick = () => close(false);
+      okBtn.onclick = () => { if (!okBtn.disabled) close(true); };
+      bg.onclick = e => { if (e.target === bg) close(false); };
+      const onKey = e => {
+        if (e.key === 'Escape') cancelBtn.click();
+        if (e.key === 'Enter' && !okBtn.disabled) okBtn.click();
+      };
+      document.addEventListener('keydown', onKey);
+      setTimeout(() => inp.focus(), 60);
+    });
+
+  // ═══════════════════════════════════════════════════════════
+  //  8. SAFE FLOWS — double-confirm for destructive actions
+  // ═══════════════════════════════════════════════════════════
+
+  // Cancel — reversible-ish (chỉ đổi status)
+  const safeCancel = async (r) => {
+    const ok1 = await infoModal('🚫 Cancel release?', {
+      subtitle: `Release sẽ chuyển sang trạng thái <b>cancelled</b>. Có thể đổi lại status sau nếu cần.`,
+      info: {
+        'Title': r.title || r.id,
+        'Status hiện tại': r.status,
+        'Số track': r.__trackCount,
+        'Release ID': r.id.slice(0, 16) + '...'
+      },
+      warnType: 'warn',
+      warn: '<strong>💡 Lưu ý</strong>Cancel <b>không xoá</b> release. Tracks và metadata vẫn còn. Chỉ đổi trạng thái để không phân phối.',
+      okText: '🚫 Cancel release này',
+      cancelText: 'Để sau'
+    });
+    if (!ok1) return;
+    const res = await doCancel(r);
+    if (res.ok) toast('✅ Đã cancel: ' + (r.title || r.id).slice(0, 40), 'ok');
+    else toast('❌ Fail: ' + res.status, 'err');
+    render();
+  };
+
+  // Delete — DOUBLE CONFIRM (step 1: info, step 2: type-to-confirm)
+  const safeDelete = async (r) => {
+    // STEP 1: Xem thông tin
+    const step1 = await infoModal('⚠️ XOÁ RELEASE — Bước 1/2', {
+      subtitle: `Bạn sắp <b>xoá vĩnh viễn</b> release này. Kiểm tra kỹ thông tin bên dưới.`,
+      info: {
+        'Title': r.title || r.id,
+        'Status': r.status,
+        'Số tracks sẽ xoá': r.__trackCount,
+        'Release ID': r.id,
+        'ISRC': r.isrc || '—',
+        'UPC': r.upc || '—',
+        'Ngày tạo': (r.created_date || '').slice(0, 19) || '—'
+      },
+      warn: `<strong>⚠️ ĐÂY LÀ BƯỚC 1/2 — CHƯA XOÁ GÌ CẢ</strong>Bước tiếp theo sẽ yêu cầu bạn gõ tên release để xác nhận.`,
+      okText: 'Tiếp tục →',
+      cancelText: 'Huỷ (an toàn)',
+      danger: true
+    });
+    if (!step1) return toast('Đã huỷ — không có gì bị xoá', 'warn');
+
+    // STEP 2: Type to confirm
+    const word = (r.title || r.id).trim().slice(0, 50);
+    const step2 = await typeConfirmModal(
+      'XOÁ VĨNH VIỄN — Bước 2/2',
+      {
+        subtitle: `<b>Bạn đang xoá "${esc(r.title || r.id)}"</b> và ${r.__trackCount} tracks của nó.`,
+        info: {
+          'Track sẽ xoá': r.__trackCount,
+          'Backup tự động': 'Có (file JSON sẽ tải về)',
+          'Undo trong session': 'Có — nhưng nên backup cẩn thận'
+        },
+        word: word,
+        wordLabel: `Gõ chính xác <code style="background:#161b22;padding:2px 6px;border-radius:4px;color:#f59e0b;font-family:ui-monospace,monospace">${esc(word)}</code> để xác nhận:`,
+        warnText: `<strong>🛑 XÁC NHẬN LẦN CUỐI</strong>Khi bấm nút XOÁ, dữ liệu sẽ bị xoá ngay lập tức.<br>Backup JSON sẽ tự động tải về máy bạn trước khi xoá.`,
+        okText: '🗑️ XOÁ VĨNH VIỄN',
+        danger: true
+      }
+    );
+    if (!step2) return toast('Đã huỷ — release vẫn an toàn', 'warn');
+
+    toast('📥 Đang backup + xoá...', 'warn');
+    await doDelete(r, { backup: true });
+    toast('✅ Đã xoá: ' + (r.title || r.id).slice(0, 40), 'ok');
+    render();
+  };
+
+  // Bulk cancel — single confirm, vì reversible
+  const safeBulkCancel = async (rows) => {
+    if (!rows.length) return toast('Không có release nào', 'warn');
+    const ok = await infoModal('🚫 Cancel nhiều releases?', {
+      subtitle: `<b>${rows.length} releases</b> sẽ chuyển sang status <b>cancelled</b>.`,
+      info: rows.slice(0, 8).reduce((acc, r, i) => {
+        acc[`${i + 1}. ${(r.title || r.id).slice(0, 30)}`] = `${r.__trackCount} tracks · ${r.status}`;
+        return acc;
+      }, rows.length > 8 ? { '... và nữa': `${rows.length - 8} release khác` } : {}),
+      warnType: 'warn',
+      warn: '<strong>💡 Có thể đổi status lại sau</strong>Không xoá dữ liệu — chỉ đổi trạng thái.',
+      okText: `🚫 Cancel ${rows.length} releases`,
+      cancelText: 'Huỷ'
+    });
+    if (!ok) return;
+    let okc = 0;
+    for (const r of rows) { const res = await doCancel(r); if (res.ok) okc++; }
+    toast(`✅ Đã cancel ${okc}/${rows.length}`, 'ok');
+    render();
+  };
+
+  // Bulk delete — DOUBLE CONFIRM, phải gõ "DELETE"
+  const safeBulkDelete = async (rows) => {
+    if (!rows.length) return toast('Không có release nào', 'warn');
+    const totalTracks = rows.reduce((s, r) => s + r.__trackCount, 0);
+
+    const step1 = await infoModal(`⚠️ XOÁ ${rows.length} RELEASES — Bước 1/2`, {
+      subtitle: `Bạn sắp xoá <b>${rows.length} releases</b> và <b>${totalTracks} tracks</b>.`,
+      info: rows.slice(0, 6).reduce((acc, r, i) => {
+        acc[`${i + 1}. ${(r.title || r.id).slice(0, 30)}`] = `${r.__trackCount} tracks`;
+        return acc;
+      }, rows.length > 6 ? { '...': `${rows.length - 6} release khác` } : {}),
+      warn: `<strong>⚠️ BƯỚC 1/2 — CHƯA XOÁ GÌ</strong>Sẽ có bước 2 yêu cầu gõ xác nhận.`,
+      okText: 'Tiếp tục →',
+      cancelText: 'Huỷ',
+      danger: true
+    });
+    if (!step1) return toast('Đã huỷ', 'warn');
+
+    const step2 = await typeConfirmModal(
+      `XOÁ ${rows.length} RELEASES — Bước 2/2`,
+      {
+        subtitle: `<b>${rows.length} releases</b> và <b>${totalTracks} tracks</b> sẽ bị xoá vĩnh viễn.`,
+        info: {
+          'Số release': rows.length,
+          'Tổng tracks': totalTracks,
+          'Backup': 'Sẽ tải JSON trước khi xoá',
+          'Undo': 'Có (session) — nhưng nên restore từ backup'
+        },
+        word: 'DELETE ALL',
+        wordLabel: `Gõ <code style="background:#161b22;padding:2px 6px;border-radius:4px;color:#f59e0b;font-family:ui-monospace,monospace">DELETE ALL</code> để xác nhận:`,
+        warnText: `<strong>🛑 XÁC NHẬN LẦN CUỐI</strong>${rows.length} releases · ${totalTracks} tracks sẽ bị xoá.<br>Backup sẽ tự tải về.`,
+        okText: `🗑️ XOÁ ${rows.length} RELEASES`,
+        danger: true
+      }
+    );
+    if (!step2) return toast('Đã huỷ — không có gì bị xoá', 'warn');
+
+    dlJSON({
+      exportedAt: new Date().toISOString(), appId: S.appId, email: S.email,
+      releases: rows.map(r => ({ release: strip(r), tracks: r.__tracks }))
+    }, `bulk_backup_${Date.now()}.json`);
+
+    let okd = 0;
+    for (const r of rows) { const res = await doDelete(r, { backup: false }); if (res.ok) okd++; }
+    await load(true);
+    toast(`✅ Đã xoá ${okd}/${rows.length} releases`, 'ok');
+    render();
+  };
+
+  // ═══════════════════════════════════════════════════════════
+  //  9. FLOWS — upload, edit, bulk
+  // ═══════════════════════════════════════════════════════════
+  const uploadMusic = async () => {
+    const v = await formModal('🎵 Upload album mới', [
+      { key: 'title', label: 'Title album/single', required: true },
+      { key: 'artist', label: 'Primary artist', value: S.email?.split('@')[0] || '', required: true },
+      { key: 'release_type', label: 'Type', value: 'single', options: ['single', 'album', 'ep'] },
+      { key: 'genre', label: 'Genre', value: 'Afrobeats' },
+      { key: 'language', label: 'Language', value: 'English' },
+      { key: 'release_date', label: 'Release date', value: new Date(Date.now() + 7 * 864e5).toISOString().slice(0, 10) },
+      { key: 'record_label', label: 'Record label' }
+    ], { subtitle: 'Bước 1/3: Nhập metadata · Bước 2: chọn artwork · Bước 3: chọn audio files' });
+    if (!v) return;
+
+    toast('🖼️ Bước 2/3 — Chọn artwork (bỏ qua nếu không cần)', 'warn', 3000);
+    const artwork = await pickFile('image/*').catch(() => null);
+
+    toast('🎵 Bước 3/3 — Chọn audio files (chọn nhiều được)', 'warn', 3000);
+    const audios = await pickFiles('audio/*,video/mp4');
+    if (!audios?.length) return toast('Không có file — huỷ', 'warn');
+
+    // Summary + confirm
+    const ok = await infoModal('✅ Xác nhận upload', {
+      subtitle: `Tạo release với <b>${audios.length} tracks</b>. Sẽ upload lên server.`,
+      info: {
+        'Title': v.title,
+        'Artist': v.artist,
+        'Type': v.release_type,
+        'Genre': v.genre,
+        'Release date': v.release_date,
+        'Artwork': artwork ? artwork.name : '(không có)',
+        'Số tracks': audios.length,
+        'Files': audios.slice(0, 3).map(f => f.name).join(', ') + (audios.length > 3 ? ` +${audios.length - 3} nữa` : '')
+      },
+      okText: `⏫ Upload ${audios.length} tracks`,
+      cancelText: 'Huỷ'
+    });
+    if (!ok) return;
+
+    let artworkUrl = '';
+    if (artwork) {
+      try { artworkUrl = await uploadFile(artwork); toast('✅ Artwork uploaded', 'ok'); }
+      catch (e) { return toast('❌ Artwork: ' + e.message, 'err'); }
+    }
+    const urls = [];
+    for (let i = 0; i < audios.length; i++) {
+      try {
+        const u = await uploadFile(audios[i]);
+        urls.push({ url: u, filename: audios[i].name });
+        toast(`⏫ ${i + 1}/${audios.length} uploaded`, '', 800);
+      } catch (e) { toast(`❌ ${audios[i].name}: ${e.message}`, 'err'); }
+    }
+    if (!urls.length) return toast('Không upload được file nào', 'err');
+
+    const payload = {
+      ...v, artist_email: S.email,
+      release_year: v.release_date.slice(0, 4),
+      artwork_url: artworkUrl, status: 'draft',
+      territories: 'worldwide', explicit: false,
+      copyright_owner: v.artist, created_by: S.email
+    };
+    const rr = await create(payload, 'release');
+    if (!rr.ok) return toast('❌ Tạo release fail', 'err');
+
+    for (let i = 0; i < urls.length; i++) {
+      await create({
+        release_id: rr.data.id, title: titleFromFilename(urls[i].filename),
+        audio_url: urls[i].url, track_number: i + 1, artist_email: S.email
+      }, 'track');
+    }
+    await load(true);
+    toast(`🎉 Tạo release "${v.title}" với ${urls.length} tracks!`, 'ok', 4000);
+    render();
+  };
+
+  const addTracks = async (rel) => {
+    toast('🎵 Chọn audio files cần thêm', 'warn', 2500);
+    const files = await pickFiles('audio/*,video/mp4');
+    if (!files.length) return;
+    const ok = await infoModal('➕ Thêm tracks', {
+      subtitle: `Thêm <b>${files.length} files</b> vào release "${esc(rel.title)}".`,
+      info: {
+        'Release': rel.title,
+        'Tracks hiện tại': rel.__trackCount,
+        'Sẽ thêm': files.length,
+        'Tổng sau': rel.__trackCount + files.length
+      },
+      okText: `⏫ Upload ${files.length} tracks`
+    });
+    if (!ok) return;
+    const urls = [];
+    for (let i = 0; i < files.length; i++) {
+      try { urls.push({ url: await uploadFile(files[i]), filename: files[i].name }); toast(`⏫ ${i + 1}/${files.length}`, '', 700); }
+      catch (e) { toast('❌ ' + files[i].name, 'err'); }
+    }
+    const start = rel.__trackCount + 1;
+    for (let i = 0; i < urls.length; i++) {
+      await create({
+        release_id: rel.id, title: titleFromFilename(urls[i].filename),
+        audio_url: urls[i].url, track_number: start + i, artist_email: S.email
+      }, 'track');
+    }
+    await load(true);
+    toast(`✅ +${urls.length} tracks`, 'ok');
+    render();
+  };
+
+  const audioFor = async (rel) => {
+    if (!rel.__tracks?.length) return toast('Release chưa có track', 'warn');
+    const sel = await formModal('🎧 Upload audio cho track', [
+      { key: 'idx', label: `Chọn track (0-${rel.__tracks.length - 1})`, type: 'number', value: '0', required: true }
+    ], { subtitle: rel.__tracks.slice(0, 5).map((t, i) => `${i}: ${esc(t.title)}`).join(' · ') + (rel.__tracks.length > 5 ? ' ...' : '') });
+    if (!sel) return;
+    const t = rel.__tracks[+sel.idx];
+    if (!t) return toast('idx sai', 'err');
+    const file = await pickFile('audio/*,video/mp4');
+    if (!file) return;
+    try {
+      const url = await uploadFile(file);
+      await update(t.id, { audio_url: url }, 'track');
+      t.audio_url = url;
+      toast('✅ Đã gán audio', 'ok');
+    } catch (e) { toast(e.message, 'err'); }
+  };
+
+  const bulkUpload = async () => {
+    const v = await formModal('⚡ Bulk add tracks', [
+      { key: 'filter', label: 'Filter releases', value: 'stuck', options: ['all', 'pending', 'stuck', 'cancelled', 'live', 'empty'] }
+    ], { subtitle: 'Chọn nhóm release → chọn audio files → files sẽ chia đều cho các release.' });
+    if (!v) return;
+    const rows = view(v.filter);
+    if (!rows.length) return toast('Không có release', 'warn');
+    toast(`🎵 Chọn audio files (chia cho ${rows.length} releases)`, 'warn', 3000);
+    const files = await pickFiles('audio/*,video/mp4');
+    if (!files.length) return;
+    const ok = await infoModal('⚡ Xác nhận bulk upload', {
+      subtitle: `<b>${files.length} files</b> sẽ chia đều cho <b>${rows.length} releases</b>.`,
+      info: {
+        'Files': files.length,
+        'Releases': rows.length,
+        'Mỗi release nhận': `~${Math.ceil(files.length / rows.length)} tracks`
+      },
+      okText: '⏫ Bắt đầu upload'
+    });
+    if (!ok) return;
+    const urls = [];
+    for (let i = 0; i < files.length; i++) {
+      try { urls.push({ url: await uploadFile(files[i]), filename: files[i].name }); toast(`⏫ ${i + 1}/${files.length}`, '', 600); }
+      catch (e) { toast('❌ ' + files[i].name, 'err'); }
+    }
+    const per = Math.ceil(urls.length / rows.length);
+    for (let ri = 0; ri < rows.length; ri++) {
+      const rel = rows[ri];
+      const chunk = urls.slice(ri * per, (ri + 1) * per);
+      const start = rel.__trackCount + 1;
+      for (let i = 0; i < chunk.length; i++) {
+        await create({
+          release_id: rel.id, title: titleFromFilename(chunk[i].filename),
+          audio_url: chunk[i].url, track_number: start + i, artist_email: S.email
+        }, 'track');
+      }
+    }
+    await load(true);
+    toast(`✅ Bulk upload xong`, 'ok');
+    render();
+  };
+
+  const editRelease = async (rel) => {
+    const fields = [
+      { key: 'title', label: 'Title', value: rel.title || '' },
+      { key: 'description', label: 'Description', type: 'textarea', value: rel.description || '' },
+      { key: 'genre', label: 'Genre', value: rel.genre || '' },
+      { key: 'language', label: 'Language', value: rel.language || '' },
+      { key: 'release_date', label: 'Release date', value: rel.release_date || '' },
+      { key: 'primary_artist', label: 'Primary artist', value: rel.primary_artist || '' },
+      { key: 'producer', label: 'Producer', value: rel.producer || '' },
+      { key: 'composer', label: 'Composer', value: rel.composer || '' },
+      { key: 'publisher', label: 'Publisher', value: rel.publisher || '' },
+      { key: 'record_label', label: 'Record label', value: rel.record_label || '' },
+      { key: 'upc', label: 'UPC', value: rel.upc || '' },
+      { key: 'isrc', label: 'ISRC', value: rel.isrc || '' },
+      { key: 'territories', label: 'Territories', value: rel.territories || '' },
+      { key: 'bpm', label: 'BPM', value: rel.bpm || '', type: 'number' },
+      { key: 'key', label: 'Key', value: rel.key || '' },
+      { key: 'mood', label: 'Mood (comma separated)', value: Array.isArray(rel.mood) ? rel.mood.join(', ') : (rel.mood || '') },
+      { key: 'explicit', label: 'Explicit', value: String(rel.explicit ?? ''), options: ['', 'true', 'false'] },
+      { key: 'artwork_url', label: 'Artwork URL', value: rel.artwork_url || '' }
+    ];
+    const v = await formModal(`✏️ Sửa: ${rel.title}`, fields, {
+      subtitle: 'Chỉnh sửa metadata. Bấm Save để lưu.',
+      okText: '💾 Save'
+    });
+    if (!v) return;
+    const patch = {};
+    for (const k in v) {
+      if (k === 'explicit') patch[k] = v[k] === 'true';
+      else if (k === 'bpm') patch[k] = v[k] ? Number(v[k]) : '';
+      else if (k === 'mood') patch[k] = v[k] ? v[k].split(',').map(s => s.trim()).filter(Boolean) : [];
+      else patch[k] = v[k];
+    }
+    const r = await update(rel.id, patch);
+    if (r.ok) { Object.assign(rel, patch); toast('✅ Saved', 'ok'); render(); }
+    else toast('❌ ' + r.status, 'err');
+  };
+
+  const editArtwork = async (rel) => {
+    const file = await pickFile('image/*');
+    if (!file) return;
+    const ok = await infoModal('🖼️ Đổi artwork', {
+      subtitle: `Đặt <b>${esc(file.name)}</b> làm artwork cho "${esc(rel.title)}".`,
+      info: { 'File': file.name, 'Size': (file.size / 1024).toFixed(1) + ' KB' },
+      okText: '⏫ Upload & đặt'
+    });
+    if (!ok) return;
+    try {
+      const url = await uploadFile(file);
+      await update(rel.id, { artwork_url: url });
+      rel.artwork_url = url;
+      toast('✅ Đã cập nhật artwork', 'ok');
+      render();
+    } catch (e) { toast(e.message, 'err'); }
+  };
+
+  const editTrackMenu = async (rel) => {
+    if (!rel.__tracks?.length) return toast('Release chưa có track', 'warn');
+    const sel = await formModal('🎵 Chọn track để sửa', [
+      { key: 'idx', label: `Track idx (0-${rel.__tracks.length - 1})`, type: 'number', value: '0', required: true }
+    ], {
+      subtitle: rel.__tracks.slice(0, 8).map((t, i) => `<b>${i}</b>: ${esc(t.title)}`).join('<br>')
+    });
+    if (!sel) return;
+    const t = rel.__tracks[+sel.idx];
+    if (!t) return toast('idx sai', 'err');
+    const v = await formModal(`🎵 ${t.title}`, [
+      { key: 'title', label: 'Title', value: t.title || '' },
+      { key: 'isrc', label: 'ISRC', value: t.isrc || '' },
+      { key: 'track_number', label: 'Track #', type: 'number', value: t.track_number || '' },
+      { key: 'audio_url', label: 'Audio URL', value: t.audio_url || '' }
+    ], { okText: '💾 Save' });
+    if (!v) return;
+    const patch = { ...v, track_number: v.track_number ? +v.track_number : '' };
+    const r = await update(t.id, patch, 'track');
+    if (r.ok) { Object.assign(t, patch); toast('✅ Saved', 'ok'); }
+  };
+
+  const bulkSetField = async () => {
+    const v = await formModal('⚡ Bulk set field', [
+      { key: 'filter', label: 'Filter releases', value: 'all', options: ['all', 'pending', 'stuck', 'cancelled', 'live'] },
+      { key: 'field', label: 'Field key', placeholder: 'genre / language / primary_artist...', required: true },
+      { key: 'value', label: 'Giá trị mới', required: true }
+    ], { subtitle: 'Set cùng 1 field cho nhiều releases.' });
+    if (!v) return;
+    const rows = view(v.filter);
+    if (!rows.length) return toast('Không có release', 'warn');
+    const ok = await infoModal('⚡ Xác nhận bulk set', {
+      subtitle: `Set <b>${esc(v.field)}</b> = <b>"${esc(v.value)}"</b> cho <b>${rows.length} releases</b>.`,
+      info: { 'Filter': v.filter, 'Số releases': rows.length, 'Field': v.field, 'Value': v.value },
+      okText: 'Áp dụng',
+      warnType: 'warn',
+      warn: '<strong>⚠️ Sẽ ghi đè giá trị hiện tại</strong>Không thể undo. Backup trước nếu cần.'
+    });
+    if (!ok) return;
+    for (const r of rows) await update(r.id, { [v.field]: v.value });
+    await load(true);
+    toast('✅ Done', 'ok');
+    render();
+  };
+
+  const bulkArtwork = async () => {
+    const v = await formModal('⚡ Bulk artwork', [
+      { key: 'filter', label: 'Filter', value: 'stuck', options: ['all', 'pending', 'stuck', 'cancelled', 'live'] }
+    ]);
+    if (!v) return;
+    const rows = view(v.filter);
+    if (!rows.length) return toast('Không có release', 'warn');
+    const file = await pickFile('image/*');
+    if (!file) return;
+    const ok = await infoModal('⚡ Xác nhận bulk artwork', {
+      subtitle: `Set <b>${esc(file.name)}</b> làm artwork cho <b>${rows.length} releases</b>.`,
+      info: { 'File': file.name, 'Số releases': rows.length },
+      okText: '⏫ Upload & áp dụng',
+      warnType: 'warn',
+      warn: '<strong>⚠️ Sẽ ghi đè artwork hiện tại</strong>'
+    });
+    if (!ok) return;
+    try {
+      const url = await uploadFile(file);
+      for (const r of rows) await update(r.id, { artwork_url: url });
+      await load(true);
+      toast('✅ Done', 'ok');
+      render();
+    } catch (e) { toast(e.message, 'err'); }
+  };
+
+  const restore = () => {
+    const inp = document.createElement('input');
+    inp.type = 'file'; inp.accept = '.json';
+    inp.onchange = async () => {
+      const file = inp.files[0]; if (!file) return;
+      let d;
+      try { d = JSON.parse(await file.text()); } catch { return toast('File JSON không hợp lệ', 'err'); }
+      const list = d.releases || (d.release ? [{ release: d.release, tracks: d.tracks }] : []);
+      if (!list.length) return toast('File không có release', 'err');
+      const ok = await infoModal('📥 Restore từ backup', {
+        subtitle: `File chứa <b>${list.length} releases</b>. Sẽ tạo MỚI (không ghi đè).`,
+        info: {
+          'Số releases': list.length,
+          'Tổng tracks': list.reduce((s, x) => s + (x.tracks?.length || 0), 0),
+          'Backup time': d.exportedAt || '—'
+        },
+        okText: '📥 Restore'
+      });
+      if (!ok) return;
+      for (const item of list) {
+        const { id, created_date, updated_date, __tracks, __trackCount, ...rel } = item.release;
+        const r1 = await create(rel, 'release');
+        if (!r1.ok) continue;
+        for (const t of item.tracks || []) {
+          const { id, release_id, ...tr } = t;
+          await create({ ...tr, release_id: r1.data.id }, 'track');
+        }
+      }
+      await load(true);
+      toast('✅ Restored', 'ok');
+      render();
+    };
+    inp.click();
+  };
+
+  // ═══════════════════════════════════════════════════════════
+  //  10. PANEL UI
+  // ═══════════════════════════════════════════════════════════
+  const panel = document.createElement('div');
+  panel.id = 'b44-panel';
+  panel.className = 'b44-root';
+  panel.innerHTML = `
+    <div id="b44-header">
+      <span class="b44-dot"></span>
+      <span class="b44-title">🎵 B44 Toolkit</span>
+      <button id="b44-refresh" title="Reload dữ liệu">↻</button>
+      <button id="b44-collapse" title="Thu gọn / mở rộng">−</button>
+    </div>
+    <div class="b44-body" id="b44-body"></div>
+  `;
+  const body = panel.querySelector('#b44-body');
+  const header = panel.querySelector('#b44-header');
+
+  const render = () => {
+    body.innerHTML = '';
+
+    // Search
+    const search = document.createElement('input');
+    search.className = 'b44-input';
+    search.placeholder = '🔍 Tìm title / id / isrc...';
+    search.value = S.ui.search || '';
+    search.oninput = () => { S.ui.search = search.value; renderList(); };
+    body.appendChild(search);
+
+    // Tabs
+    const filters = ['all', 'pending', 'stuck', 'cancelled', 'live', 'empty'];
+    const tabs = document.createElement('div');
+    tabs.style.cssText = 'display:flex;gap:4px;padding:6px 13px 4px;flex-wrap:wrap;';
+    for (const f of filters) {
+      const b = document.createElement('button');
+      b.className = 'b44-btn';
+      const count = S.cache.filter(FILTERS[f]).length;
+      const active = S.filter === f;
+      b.style.cssText = `width:auto;padding:4px 10px;font-size:11px;border-radius:6px;background:${active ? 'rgba(22,82,240,.3)' : 'rgba(255,255,255,.05)'};${active ? 'color:#7dabff;' : ''}`;
+      b.textContent = `${f} (${count})`;
+      b.onclick = () => { S.filter = f; view(f); render(); };
+      tabs.appendChild(b);
+    }
+    body.appendChild(tabs);
+
+    // List
+    const listWrap = document.createElement('div');
+    listWrap.id = 'b44-list';
+    listWrap.className = 'b44-list';
+    body.appendChild(listWrap);
+    renderList();
+
+    const section = t => {
+      const s = document.createElement('div');
+      s.className = 'b44-section'; s.textContent = t;
+      body.appendChild(s);
+    };
+    const btn = (icon, label, hint, onClick, cls = '') => {
+      const b = document.createElement('button');
+      b.className = 'b44-btn ' + cls;
+      b.innerHTML = `<span class="b44-icon">${icon}</span><span class="b44-label">${esc(label)}${hint ? `<span class="b44-hint">${esc(hint)}</span>` : ''}</span>`;
+      b.onclick = async () => {
+        try { await onClick(); } catch (e) { toast('❌ ' + e.message, 'err'); }
+      };
+      body.appendChild(b);
+    };
+
+    // Upload
+    section('🎵 Upload Music');
+    btn('🎵', 'Upload album mới', 'Nhập metadata → chọn artwork → chọn audio', uploadMusic, 'b44-primary');
+    btn('➕', 'Thêm tracks vào release', 'Upload thêm audio cho release có sẵn', async () => {
+      const v = await formModal('Chọn release', [{ key: 'id', label: 'idx hoặc ID', required: true }]);
+      if (!v) return;
+      const r = resolve(v.id);
+      if (!r) return toast('Không tìm thấy', 'err');
+      await addTracks(r);
+    });
+    btn('🎧', 'Upload audio cho track', 'Gán file audio vào track chưa có', async () => {
+      const v = await formModal('Chọn release', [{ key: 'id', label: 'idx hoặc ID', required: true }]);
+      if (!v) return;
+      const r = resolve(v.id);
+      if (!r) return toast('Không tìm thấy', 'err');
+      await audioFor(r);
+    });
+    btn('⚡', 'Bulk add tracks', 'Chia nhiều file cho nhiều release', bulkUpload);
+
+    // Actions
+    section('🎯 Actions (đơn)');
+    btn('🚫', 'Cancel release', 'Đổi status → cancelled (reversible)', async () => {
+      const r = resolve(await promptId('Cancel release nào?'));
+      if (r) await safeCancel(r);
+    });
+    btn('🗑️', 'Xoá release', '⚠️ XOÁ VĨNH VIỄN — có double-confirm', async () => {
+      const r = resolve(await promptId('Xoá release nào?'));
+      if (r) await safeDelete(r);
+    }, 'b44-danger');
+    btn('💾', 'Backup release', 'Tải JSON chứa metadata + tracks', async () => {
+      const r = resolve(await promptId('Backup release nào?'));
+      if (r) { doBackup(r); toast('📥 Backup tải về', 'ok'); }
+    });
+
+    // Bulk
+    section('⚡ Bulk (nhiều)');
+    btn('🚫', 'Cancel nhiều', 'Chọn filter → cancel tất cả', async () => {
+      const v = await formModal('Bulk cancel', [
+        { key: 'filter', label: 'Filter releases', value: 'pending', options: ['all', 'pending', 'stuck', 'cancelled', 'live'] }
+      ]);
+      if (!v) return;
+      await safeBulkCancel(view(v.filter));
+    });
+    btn('🗑️', 'Xoá nhiều', '⚠️ DOUBLE-CONFIRM + gõ DELETE ALL', async () => {
+      const v = await formModal('Bulk delete', [
+        { key: 'filter', label: 'Filter releases', value: 'stuck', options: ['all', 'pending', 'stuck', 'cancelled', 'live', 'empty'] }
+      ]);
+      if (!v) return;
+      await safeBulkDelete(view(v.filter));
+    }, 'b44-danger');
+    btn('💾', 'Backup nhiều', 'Tải 1 file JSON chứa tất cả', async () => {
+      const v = await formModal('Bulk backup', [
+        { key: 'filter', label: 'Filter', value: 'all', options: ['all', 'pending', 'stuck', 'cancelled', 'live', 'empty'] }
+      ]);
+      if (!v) return;
+      const rows = view(v.filter);
+      if (!rows.length) return toast('Không có release', 'warn');
+      dlJSON({
+        exportedAt: new Date().toISOString(), appId: S.appId, email: S.email,
+        releases: rows.map(r => ({ release: strip(r), tracks: r.__tracks }))
+      }, `bulk_backup_${Date.now()}.json`);
+      toast(`📥 ${rows.length} releases backed up`, 'ok');
+    });
+
+    // Edit
+    section('✏️ Edit');
+    btn('✏️', 'Sửa release', 'Đổi title, genre, ISRC, ...', async () => {
+      const r = resolve(await promptId('Sửa release nào?'));
+      if (r) await editRelease(r);
+    });
+    btn('🖼️', 'Đổi artwork', 'Upload ảnh mới', async () => {
+      const r = resolve(await promptId('Đổi artwork release nào?'));
+      if (r) await editArtwork(r);
+    });
+    btn('🎵', 'Sửa track', 'Đổi title/ISRC/audio của 1 track', async () => {
+      const r = resolve(await promptId('Release nào?'));
+      if (r) await editTrackMenu(r);
+    });
+    btn('⚡', 'Bulk set field', 'Set 1 field cho nhiều release', bulkSetField);
+    btn('⚡', 'Bulk artwork', 'Cùng 1 ảnh cho nhiều release', bulkArtwork);
+
+    // Data
+    section('💾 Data');
+    btn('📊', 'Export CSV', 'Danh sách releases dạng bảng', () => { dlCSV(S.cache, `releases_${Date.now()}.csv`); toast('📥 CSV', 'ok'); });
+    btn('📦', 'Export JSON (full)', 'Metadata + tracks đầy đủ', () => {
+      dlJSON({
+        exportedAt: new Date().toISOString(), appId: S.appId, email: S.email,
+        releases: S.cache.map(r => ({ release: strip(r), tracks: r.__tracks }))
+      }, `releases_full_${Date.now()}.json`);
+      toast('📥 JSON', 'ok');
+    });
+    btn('📥', 'Restore từ JSON', 'Tạo lại release từ file backup', restore);
+    btn('↩️', 'Undo lần cuối', `Restore release vừa xoá (${S.undo.length} trong stack)`, async () => {
+      if (!S.undo.length) return toast('Không có gì để undo', 'warn');
+      const last = S.undo[S.undo.length - 1];
+      const ok = await infoModal('↩️ Undo lần cuối?', {
+        subtitle: `Restore "<b>${esc(last.release.title)}</b>" và ${last.tracks.length} tracks.`,
+        info: { 'Release': last.release.title, 'Tracks': last.tracks.length, 'Xoá lúc': new Date(last.ts).toLocaleString() },
+        okText: '↩️ Restore'
+      });
+      if (!ok) return;
+      const res = await doUndo();
+      toast(res.ok ? '✅ Restored' : '❌ ' + (res.msg || 'Fail'), res.ok ? 'ok' : 'err');
+      render();
+    });
+
+    // System
+    section('⚙️ System');
+    btn('⚙️', 'Setup account / app', `appId · email · expected tracks`, async () => {
+      const v = await formModal('⚙️ Setup', [
+        { key: 'appId', label: 'App ID', value: S.appId || '', required: true },
+        { key: 'email', label: 'Email', value: S.email || '', required: true },
+        { key: 'expected', label: 'Expected tracks (album size)', value: String(S.expected || ''), type: 'number' }
+      ], { subtitle: 'Cấu hình để toolkit biết app nào, account nào, và bao nhiêu track là đủ.' });
+      if (!v) return;
+      S.appId = v.appId; S.email = v.email;
+      S.expected = v.expected ? +v.expected : 0;
+      save(); S.cache = [];
+      await load(true).catch(e => toast(e.message, 'err'));
+      toast('✅ Đã lưu setup', 'ok');
+      render();
+    });
+    btn('🏷️', 'Đổi entity names', 'Cho app Base44 khác (Album/Song...)', async () => {
+      const v = await formModal('Entity names', [
+        { key: 'release', label: 'Release entity', value: S.entities.release },
+        { key: 'track', label: 'Track entity', value: S.entities.track }
+      ]);
+      if (!v) return;
+      S.entities.release = v.release; S.entities.track = v.track;
+      save(); S.cache = [];
+      toast('✅ Saved', 'ok');
+      render();
+    });
+    btn(S.dry ? '🔴' : '🟢', `Dry-run: ${S.dry ? 'BẬT (không thực thi)' : 'TẮT (thực thi thật)'}`,
+      S.dry ? 'Đang mô phỏng — sẽ không gửi request' : 'Thao tác sẽ được thực thi thật',
+      async () => {
+        if (!S.dry) {
+          const ok = await infoModal('🧪 Bật Dry-run?', {
+            subtitle: 'Dry-run sẽ <b>mô phỏng</b> mọi thao tác — không gửi request lên server.',
+            info: { 'Cancel': 'Sẽ log nhưng không đổi status', 'Delete': 'Sẽ log nhưng không xoá', 'Upload': 'Sẽ log nhưng không upload' },
+            okText: '🧪 Bật dry-run'
+          });
+          if (!ok) return;
+        }
+        S.dry = !S.dry; save();
+        toast(`Dry-run: ${S.dry ? 'BẬT' : 'TẮT'}`, S.dry ? 'warn' : 'ok');
+        render();
+      });
+    btn('📞', 'Raw API call', 'Gửi request tuỳ ý (advanced)', async () => {
+      const v = await formModal('📞 Raw API', [
+        { key: 'method', label: 'Method', value: 'GET', options: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'] },
+        { key: 'path', label: 'Path', value: ent('release'), required: true },
+        { key: 'body', label: 'Body JSON (nếu cần)', type: 'textarea', value: '' }
+      ], { subtitle: '⚠️ Gửi request thủ công — chỉ dùng khi biết mình làm gì.' });
+      if (!v) return;
+      const r = await api(v.path, { method: v.method, ...(v.body ? { body: v.body } : {}) });
+      console.log(r.status, r.data);
+      toast(`${v.method} → ${r.status}`, r.ok ? 'ok' : 'err');
+    });
+    btn('❓', 'Help & Tips', 'Xem hướng dẫn nhanh', () => {
+      infoModal('❓ Hướng dẫn nhanh', {
+        subtitle: 'Các thao tác an toàn cho dữ liệu của bạn.',
+        info: {
+          '🖱️ Di chuyển': 'Kéo thanh header xanh',
+          '↻ Reload': 'Nút ↻ trên header',
+          '− Thu gọn': 'Nút − trên header',
+          '🚫 Cancel': 'Đổi status → cancelled (hoàn tác được)',
+          '🗑️ Xoá': '⚠️ 2 bước xác nhận + backup tự động',
+          '💾 Backup': 'Tải JSON trước khi thao tác',
+          '↩️ Undo': 'Khôi phục release vừa xoá (session)',
+          '🧪 Dry-run': 'Mô phỏng, không gửi request',
+          '📊 CSV': 'Bảng tính Excel/Sheets',
+          '📦 JSON': 'Backup đầy đủ metadata + tracks'
+        },
+        okText: 'Đã hiểu'
+      });
+      console.log('%c🔌 Public API:', 'color:#1652F0;font-weight:bold', Object.keys(window.X).join(', '));
+    });
+
+    // Footer
+    const foot = document.createElement('div');
+    foot.className = 'b44-footer';
+    foot.innerHTML = `
+      <div class="b44-footer-line">
+        <span>v5.0 Safe Edition</span>
+        <span>${S.cache.length} rel · ${S.undo.length} undo</span>
+      </div>
+      <div class="b44-footer-line" style="margin-top:3px">
+        <span>${S.appId?.slice(0, 12) || '?'}...</span>
+        <span>${S.dry ? '🧪 DRY' : '🔴 LIVE'}</span>
+      </div>
+    `;
+    body.appendChild(foot);
+  };
+
+  const renderList = () => {
+    const wrap = panel.querySelector('#b44-list');
+    if (!wrap) return;
+    wrap.innerHTML = '';
+    let rows = view(S.filter);
+    const q = (S.ui.search || '').toLowerCase();
+    if (q) rows = rows.filter(r =>
+      (r.title || '').toLowerCase().includes(q) || (r.id || '').includes(q) ||
+      (r.isrc || '').toLowerCase().includes(q) || (r.upc || '').includes(q)
+    );
+    if (!rows.length) {
+      const e = document.createElement('div');
+      e.style.cssText = 'padding:20px;text-align:center;color:#484f58;font-size:12px;';
+      e.textContent = S.cache.length ? 'Không match filter/search' : 'Chưa load dữ liệu';
+      wrap.appendChild(e);
+      return;
+    }
+    for (const r of rows.slice(0, 100)) {
+      const item = document.createElement('div');
+      item.className = 'b44-item';
+      const isStuck = FILTERS.stuck(r);
+      item.innerHTML = `
+        <div class="b44-item-info">
+          <div class="b44-item-title">${esc(r.title || r.name || '(untitled)')}</div>
+          <div class="b44-item-meta">
+            <span class="b44-badge ${esc(r.status)}">${esc(r.status || '-')}</span>
+            <span>${r.__trackCount} tracks</span>
+            ${isStuck ? '<span class="b44-badge stuck">⚠ stuck</span>' : ''}
+          </div>
+        </div>
+        <div class="b44-item-actions">
+          <button title="Cancel (đổi status)">🚫</button>
+          <button title="Sửa metadata">✏️</button>
+          <button title="XOÁ VĨNH VIỄN" class="b44-danger">🗑️</button>
+        </div>
+      `;
+      const [c, e, d] = item.querySelectorAll('button');
+      c.onclick = ev => { ev.stopPropagation(); safeCancel(r); };
+      e.onclick = ev => { ev.stopPropagation(); editRelease(r); };
+      d.onclick = ev => { ev.stopPropagation(); safeDelete(r); };
+      item.onclick = () => {
+        console.log('📦 Release:', strip(r));
+        console.table(r.__tracks.map(t => ({ id: t.id, title: t.title, isrc: t.isrc, audio: t.audio_url ? '✓' : '✗' })));
+      };
+      wrap.appendChild(item);
+    }
+  };
+
+  const promptId = async (label) => {
+    const v = await formModal(label, [{ key: 'id', label: 'idx hoặc ID', required: true, placeholder: '0' }]);
+    return v?.id;
+  };
+
+  // ═══════════════════════════════════════════════════════════
+  //  11. DRAG & POSITION
+  // ═══════════════════════════════════════════════════════════
+  const applyPosition = () => {
+    const w = panel.offsetWidth, h = panel.offsetHeight;
+    let { x, y } = S.ui;
+    if (x == null || y == null) { x = window.innerWidth - w - 20; y = 80; }
+    x = Math.max(0, Math.min(window.innerWidth - w, x));
+    y = Math.max(0, Math.min(window.innerHeight - Math.min(h, 200), y));
+    panel.style.left = x + 'px';
+    panel.style.top = y + 'px';
+    panel.style.right = 'auto';
+    panel.style.bottom = 'auto';
+    S.ui.x = x; S.ui.y = y;
+  };
+  let dragging = false, dragStart = null;
+  const startDrag = e => {
+    if (e.target.tagName === 'BUTTON') return;
+    dragging = true;
+    const p = e.touches ? e.touches[0] : e;
+    const rect = panel.getBoundingClientRect();
+    dragStart = { x: p.clientX - rect.left, y: p.clientY - rect.top };
+    e.preventDefault();
+  };
+  const onDrag = e => {
+    if (!dragging) return;
+    const p = e.touches ? e.touches[0] : e;
+    const w = panel.offsetWidth, h = panel.offsetHeight;
+    let x = Math.max(0, Math.min(window.innerWidth - w, p.clientX - dragStart.x));
+    let y = Math.max(0, Math.min(window.innerHeight - 40, p.clientY - dragStart.y));
+    panel.style.left = x + 'px';
+    panel.style.top = y + 'px';
+    S.ui.x = x; S.ui.y = y;
+    e.preventDefault();
+  };
+  const endDrag = () => { if (dragging) { dragging = false; saveUI(); } };
+  header.addEventListener('mousedown', startDrag);
+  header.addEventListener('touchstart', startDrag, { passive: false });
+  document.addEventListener('mousemove', onDrag);
+  document.addEventListener('touchmove', onDrag, { passive: false });
+  document.addEventListener('mouseup', endDrag);
+  document.addEventListener('touchend', endDrag);
+  window.addEventListener('resize', applyPosition);
+
+  panel.querySelector('#b44-collapse').onclick = () => {
+    panel.classList.toggle('b44-collapsed');
+    S.ui.collapsed = panel.classList.contains('b44-collapsed');
+    saveUI(); applyPosition();
+  };
+  panel.querySelector('#b44-refresh').onclick = async () => {
+    toast('🔍 Đang tải...');
+    try { await load(true); render(); toast(`✅ ${S.cache.length} releases`, 'ok'); }
+    catch (e) { toast('❌ ' + e.message, 'err'); }
+  };
+
+  // ═══════════════════════════════════════════════════════════
+  //  12. BOOT & PUBLIC API
+  // ═══════════════════════════════════════════════════════════
+  const boot = async () => {
+    injectCSS();
+    document.body.appendChild(panel);
+    applyPosition();
+    if (S.ui.collapsed) panel.classList.add('b44-collapsed');
+
+    if (!S.appId || !S.email) {
+      render();
+      toast('👋 Chào! Bấm "⚙️ Setup account / app" để bắt đầu', 'warn', 5000);
+      return;
+    }
+    toast('🔍 Loading releases...');
+    try {
+      await load(true);
+      render();
+      toast(`✅ ${S.cache.length} releases loaded`, 'ok');
+      if (!S.ui.onboarded) {
+        S.ui.onboarded = true; saveUI();
+        setTimeout(() => {
+          infoModal('👋 Chào mừng — Hướng dẫn nhanh', {
+            subtitle: 'Toolkit có <b>double-confirm</b> cho mọi thao tác nguy hiểm.',
+            info: {
+              '🖱️ Di chuyển panel': 'Kéo thanh header xanh',
+              '🎵 Upload nhạc': 'Mục "Upload Music"',
+              '🚫 Cancel': 'Đổi status — hoàn tác được',
+              '🗑️ Xoá': '⚠️ Hỏi 2 lần + backup tự động',
+              '↩️ Undo': 'Khôi phục trong session',
+              '🧪 Dry-run': 'Mô phỏng an toàn'
+            },
+            okText: 'Đã hiểu'
+          });
+        }, 800);
+      }
+    } catch (e) { render(); toast('❌ ' + e.message, 'err'); }
+  };
+
+  window.X = {
+    setup: (appId, email, expected) => {
+      if (appId) S.appId = appId;
+      if (email) S.email = email;
+      if (expected != null) S.expected = +expected;
+      save(); S.cache = [];
+      if (panel.isConnected) { load(true).then(render).catch(() => render()); }
+      return { appId: S.appId, email: S.email };
+    },
+    dry: (on) => { S.dry = !!on; save(); render(); toast(`dry=${S.dry}`, S.dry ? 'warn' : 'ok'); },
+    load, cache: () => S.cache, state: S, resolve,
+    cancel: async v => { const r = resolve(v); return r ? safeCancel(r) : null; },
+    del: async v => { const r = resolve(v); return r ? safeDelete(r) : null; },
+    delete: async v => { const r = resolve(v); return r ? safeDelete(r) : null; },
+    backup: v => { const r = resolve(v); return r ? (doBackup(r), toast('📥 Backup', 'ok')) : null; },
+    undo: doUndo,
+    upload: uploadMusic, addTracks, audioFor, bulkUpload, uploadFile,
+    edit: editRelease, artwork: editArtwork, track: editTrackMenu,
+    csv: () => { dlCSV(S.cache, `releases_${Date.now()}.csv`); toast('📥 CSV', 'ok'); },
+    json: () => {
+      dlJSON({ exportedAt: new Date().toISOString(), appId: S.appId, email: S.email,
+        releases: S.cache.map(r => ({ release: strip(r), tracks: r.__tracks })) },
+        `releases_full_${Date.now()}.json`);
+      toast('📥 JSON', 'ok');
+    },
+    restore, api, toast, modal: formModal, confirm: infoModal, typeConfirm: typeConfirmModal,
+    panel, render, toggle: () => { panel.classList.toggle('b44-collapsed'); applyPosition(); },
+    show: () => { panel.style.display = 'flex'; },
+    hide: () => { panel.style.display = 'none'; },
+  };
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
+  else boot();
+
+  console.log('%c🎵 BASE44 FLOATING TOOLKIT v5.0 — Safe Edition', 'color:#1652F0;font-weight:bold;font-size:15px');
+  console.log('%c🛡️  Double-confirm cho mọi thao tác phá huỷ · Backup tự động · Undo trong session',
+    'color:#10b981;font-weight:bold');
+  console.log('%c👉 Panel góc phải · Kéo header để di chuyển · X.help() qua panel',
+    'color:#f59e0b');
+})();
